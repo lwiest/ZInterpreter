@@ -101,7 +101,7 @@ You are standing in an open field west of a white house, with a boarded front
 door.
 There is a small mailbox here.
 
->
+>_
 ```
 
 ## Build Instructions
@@ -123,11 +123,11 @@ makejar
 
 This produces the `ZInterpreter.jar` file, containing the compiled Z-Interpreter.
 
-(Note that `%JAVA_HOME%` must point to the installation folder of your Java SDK.)
+(Note that environment variable `%JAVA_HOME%` must point to the installation folder of your Java SDK.)
 
 ## Known Limitations
 
-Z-Interpreter implements a Z-machine of version 3 described in [The Z-Machine Standards Document Version 1.0](https://www.ifarchive.org/if-archive/infocom/interpreters/specification/z-spec10-pdf.zip) with the following known limitations:
+Z-Interpreter implements a Z-machine of version 3 as described in [The Z-Machine Standards Document Version 1.0](https://www.ifarchive.org/if-archive/infocom/interpreters/specification/z-spec10-pdf.zip) with the following limitations:
 * No support of a status line (as this implementation uses a teletype output metaphor)
 * No support of sounds
 * No support of redirecting input and output
