@@ -39,7 +39,6 @@ Enjoy! -- Lorenz
 ## Table of Contents
 
 * [Getting Started](#getting-started)
-* [Prerequisites](#prerequisites)
 * [Build Instructions](#build-instructions)
 * [Known Limitations](#known-limitations)
 * [Where Do I Get Infocom Story Files?](#where-do-i-get-infocom-story-files)
