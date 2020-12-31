@@ -52,7 +52,7 @@ I have prepared for you a [release](https://github.com/lwiest/ZInterpreter/relea
 * You have a story file (from Infocom or created with any story file compiler) supporting version 3 of the Z-machine. 
 
 ### Instructions
-1. Download [ZInterpreter.jar](https://github.com/lwiest/ZInterpreter/releases/download/v1.0/ZInterpreter.jar) to a folder.
+1. Download [ZInterpreter.jar](https://github.com/lwiest/ZInterpreter/releases/download/latest/ZInterpreter.jar) to a folder.
 2. Open a command prompt in that folder and enter:
    ``` 
    java -jar ZInterpreter.jar
