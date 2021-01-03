@@ -47,7 +47,7 @@ Enjoy! &mdash; Lorenz
 
 ### Instructions
 1. Download [ZInterpreter.jar](https://github.com/lwiest/ZInterpreter/releases/download/latest/ZInterpreter.jar) to a folder.
-2. Open a command prompt in that folder and enter:
+2. Open a command prompt in that folder and enter
    ``` 
    java -jar ZInterpreter.jar
    ```
@@ -101,7 +101,7 @@ Enjoy! &mdash; Lorenz
 2. **To work with the Z-Interpreter source code in your Eclipse IDE**, import the `ZInterpreter` project to your Eclipse 
 IDE from the temporary folder as an import source _General > Existing Projects into Workspace_.
 3. **To compile Z-Interpreter into a convenient JAR file** (Windows only), open a command prompt in the temporary folder 
-and enter:
+and enter
    ```
    makejar
    ```
