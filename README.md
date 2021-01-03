@@ -3,7 +3,7 @@
 Z-Interpreter is an open-source program for playing [Infocom](https://en.wikipedia.org/wiki/Infocom) text adventures.
 It is written in Java.
 
-Z-Interpreter implements Infocom's Z-machine, a virtual computer developed for playing text adventures. Z-Interpreter can play text adventures (compiled into "story files") supporting version 3 of the Z-machine. This applies to many of Infocom's classic text adventures, such as:
+Z-Interpreter implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-machine), a virtual computer developed for playing text adventures. This Z-Interpreter implementation can play text adventures (compiled into "story files") for version 3 of the Z-machine. This applies to many of Infocom's classic text adventures, such as:
 
 * Ballyhoo
 * Cutthroats
@@ -30,7 +30,7 @@ Z-Interpreter implements Infocom's Z-machine, a virtual computer developed for p
 * Zork II
 * Zork III
 
-Enjoy! -- Lorenz
+Enjoy! &mdash; Lorenz
 
 ## Table of Contents
 * [Getting Started](#getting-started)
@@ -43,7 +43,7 @@ Enjoy! -- Lorenz
 
 ### Prerequisites
 * You have installed Java SDK 8 or higher on your system.
-* You have a story file (from Infocom or created with any story file compiler) supporting version 3 of the Z-machine. 
+* You have a story file (from Infocom or created with any story file compiler) for version 3 of the Z-machine. 
 
 ### Instructions
 1. Download [ZInterpreter.jar](https://github.com/lwiest/ZInterpreter/releases/download/latest/ZInterpreter.jar) to a folder.
@@ -51,7 +51,7 @@ Enjoy! -- Lorenz
    ``` 
    java -jar ZInterpreter.jar
    ```
-   This runs Z-Interpreter and lists command-line options:
+   This runs Z-Interpreter and lists command-line options
    ```
     ____      ___     _                        _           
    |_  / ___ |_ _|_ _| |_ ___ _ _ _ __ _ _ ___| |_ ___ _ _ 
