@@ -24,11 +24,6 @@
 
 // LW 13-NOV-2020 Created
 // LW 19-DEC-2020 Completed
-// LW 25-DEC-2020 Test-played "Zork I"
-// LW 29-DEC-2020 Test-played "Enchanter"
-
-// TODO: Support "[MORE]" when screen is full
-// TODO: Start game at bottom of screen
 
 package de.lorenzwiest.zmachine;
 
