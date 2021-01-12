@@ -5,30 +5,30 @@ It is written in Java.
 
 Z-Interpreter implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-machine), a virtual computer developed for playing text adventures. This Z-Interpreter implementation can play text adventures (compiled into "story files") for version 3 of the Z-machine. This applies to many of Infocom's classic text adventures, such as:
 
-* Ballyhoo
-* Cutthroats
-* Deadline
-* Enchanter
-* The Hitchhiker's Guide To The Galaxy
-* Hollywood Hijinx
-* Infidel
-* Leather Goddesses of Phobos
-* Lurking Horror
-* Moonmist
-* Planetfall
-* Plundered Hearts
-* Seastalker (limited support only)
-* Sorcerer
-* Spellbreaker
-* Starcross
-* Stationfall
-* Suspect
-* Suspended
-* Wishbringer
-* Witness
-* Zork I
-* Zork II
-* Zork III
+* [Ballyhoo](https://en.wikipedia.org/wiki/Ballyhoo_(video_game))
+* [Cutthroats](https://en.wikipedia.org/wiki/Cutthroats_(video_game))
+* [Deadline](https://en.wikipedia.org/wiki/Deadline_(video_game))
+* [Enchanter](https://en.wikipedia.org/wiki/Enchanter_(video_game))
+* [Hitchhiker's Guide To The Galaxy](https://en.wikipedia.org/wiki/The_Hitchhiker%27s_Guide_to_the_Galaxy_(computer_game))
+* [Hollywood Hijinx](https://en.wikipedia.org/wiki/Hollywood_Hijinx)
+* [Infidel](https://en.wikipedia.org/wiki/Infidel_(video_game))
+* [Leather Goddesses of Phobos](https://en.wikipedia.org/wiki/Leather_Goddesses_of_Phobos)
+* [Lurking Horror](https://en.wikipedia.org/wiki/The_Lurking_Horror)
+* [Moonmist](https://en.wikipedia.org/wiki/Moonmist)
+* [Planetfall](https://en.wikipedia.org/wiki/Planetfall)
+* [Plundered Hearts](https://en.wikipedia.org/wiki/Plundered_Hearts)
+* [Seastalker](https://en.wikipedia.org/wiki/Seastalker) (limited support only)
+* [Sorcerer](https://en.wikipedia.org/wiki/Sorcerer_(video_game))
+* [Spellbreaker](https://en.wikipedia.org/wiki/Spellbreaker)
+* [Starcross](https://en.wikipedia.org/wiki/Starcross_(video_game))
+* [Stationfall](https://en.wikipedia.org/wiki/Stationfall)
+* [Suspect](https://en.wikipedia.org/wiki/Suspect_(video_game))
+* [Suspended](https://en.wikipedia.org/wiki/Suspended_(video_game))
+* [Wishbringer](https://en.wikipedia.org/wiki/Wishbringer)
+* [Witness](https://en.wikipedia.org/wiki/The_Witness_(1983_video_game))
+* [Zork I](https://en.wikipedia.org/wiki/Zork_I)
+* [Zork II](https://en.wikipedia.org/wiki/Zork_II)
+* [Zork III](https://en.wikipedia.org/wiki/Zork_III)
 
 Enjoy! &mdash; Lorenz
 
