@@ -23,7 +23,7 @@
  */
 
 // LW 13-NOV-2020 Created
-// LW 19-DEC-2020 Completed
+// LW 19-DEC-2020 Completed first running version
 
 package de.lorenzwiest.zmachine;
 
@@ -43,36 +43,22 @@ public class ZInterpreter {
 	////////////////////////////////////////////////////////////////////////////
 
 	private static class ZMachine {
-		final static int OPERAND_LARGE = 0b00;
-		final static int OPERAND_SMALL = 0b01;
-		final static int OPERAND_VARIABLE = 0b10;
-		final static int OPERAND_OMITTED = 0b11;
-
-		final static String EOL = "\n"; // platform-independent EOL
-
-		private final static int WORD_SIZE = 2;
-
-		byte[] story;
-		Header header;
-		Stack stack;
-		int pc; // NOTE: A 32-bit value
-		boolean isRunning;
 
 		////////////////////////////////////////////////////////////////////////////
 
 		private class Header {
-			int versionNumber;
-			int flags1;
-			int releaseNumber;
-			int baseHighMemoryAddr;
-			int initialPC;
-			int dictionaryAddr;
-			int objectTableAddr;
-			int globalVariablesTableAddr;
-			int baseStaticMemoryAddr;
-			String serialCode;
-			int abbreviationTableAddr;
-			int lengthOfFile;
+			private int versionNumber;
+			private int flags1;
+			private int releaseNumber;
+			private int baseHighMemoryAddr;
+			private int initialPC;
+			private int dictionaryAddr;
+			private int objectTableAddr;
+			private int globalVariablesTableAddr;
+			private int baseStaticMemoryAddr;
+			private String serialCode;
+			private int abbreviationTableAddr;
+			private int lengthOfFile;
 
 			public Header(ZMachine zm) {
 				this.versionNumber = zm.getByte(0x00);
@@ -104,11 +90,11 @@ public class ZInterpreter {
 			//
 			//  1023                 [ * ]
 			//  .... ............... .....
-			//    17 stack_2         [ * ] <-- this.top
+			//    17 stack_2         [ * ] <-- this.topIndex
 			//    16 stack_1         [ * ]
 			//    15 local_1         [ * ]
 			//    14 num locals      [ 1 ]
-			//    13 prev stackFrame [ 4 ] <-- this.stackFrame
+			//    13 prev stackFrame [ 4 ] <-- this.stackFrameIndex
 			//    12 returnAddr_Lo   [ * ]
 			//    11 returnAddr_Hi   [ * ]
 			//    10 stack_3         [ * ]
@@ -128,8 +114,8 @@ public class ZInterpreter {
 			private final static int STACK_SIZE = 1024;
 
 			private int[] stack;
-			private int top;
-			private int stackFrame; // points to previous stack frame
+			private int topIndex;
+			private int stackFrameIndex; // points to previous stack frame
 
 			public Stack() {
 				this.stack = new int[STACK_SIZE];
@@ -137,16 +123,16 @@ public class ZInterpreter {
 			}
 
 			public void reset() {
-				this.top = -1;
-				this.stackFrame = -1;
+				this.topIndex = -1;
+				this.stackFrameIndex = -1;
 			}
 
 			public void push(int value) {
-				if (this.top >= STACK_SIZE) {
-					halt("push - stack overflow");
+				if (this.topIndex >= STACK_SIZE) {
+					halt("push() - Stack overflow");
 				}
-				this.top++;
-				this.stack[this.top] = value;
+				this.topIndex++;
+				this.stack[this.topIndex] = value;
 			}
 
 			public void pushInt32(int value) {
@@ -158,38 +144,52 @@ public class ZInterpreter {
 			}
 
 			public int pop() {
-				if (this.top < 0) {
-					halt("pop - stack underflow");
+				if (this.topIndex < 0) {
+					halt("pop() - Stack underflow");
 				}
 
-				int value = this.stack[this.top];
-				this.top--;
+				int value = this.stack[this.topIndex];
+				this.topIndex--;
 				return value;
 			}
 
 			public int popInt32() {
 				int lo = pop();
 				int hi = pop();
-
 				return (hi << 16) | lo;
 			}
 
 			public int peek(int index) {
-				if ((index < 0) || (index > this.top)) {
-					halt(String.format("peek - index %d out of bounds [%d..%d]", index, 0, this.top));
+				if ((index < 0) || (index > this.topIndex)) {
+					halt(String.format("peek() - Index %d out of bounds [%d..%d]", index, 0, this.topIndex));
 				}
 				return this.stack[index];
 			}
 
 			public void poke(int index, int value) {
-				if ((index < 0) || (index > this.top)) {
-					halt(String.format("poke - index %d out of bounds [%d..%d]", index, 0, this.top));
+				if ((index < 0) || (index > this.topIndex)) {
+					halt(String.format("poke() - Index %d out of bounds [%d..%d]", index, 0, this.topIndex));
 				}
 				this.stack[index] = value;
 			}
 		}
 
 		////////////////////////////////////////////////////////////////////////////
+
+		private final static String EOL = "\n"; // platform-independent EOL
+
+		private final static int OPERAND_LARGE = 0b00;
+		private final static int OPERAND_SMALL = 0b01;
+		private final static int OPERAND_VARIABLE = 0b10;
+		private final static int OPERAND_OMITTED = 0b11;
+
+		private final static int WORD_SIZE = 2;
+
+		private byte[] story;
+		private Header header;
+		private Stack stack;
+		private int pc; // a 32-bit value
+		private boolean isRunning;
 
 		public ZMachine(byte[] story) {
 			this.story = story;
@@ -224,7 +224,7 @@ public class ZInterpreter {
 		// utilities
 
 		public boolean isBitSet(int value, int bitPos) {
-			return ((value & (1 << bitPos)) != 0);
+			return (value & (1 << bitPos)) != 0;
 		}
 
 		public boolean isBitClear(int value, int bitPos) {
@@ -275,7 +275,7 @@ public class ZInterpreter {
 			int result = -1;
 			switch (opType) {
 				case OPERAND_SMALL:
-					result = consumeByte(); // TODO: Expect signed values here?
+					result = consumeByte(); // do we expect signed values here?
 					break;
 				case OPERAND_LARGE:
 					result = consumeWord();
@@ -285,7 +285,7 @@ public class ZInterpreter {
 					result = getVariableValue(varNumber);
 					break;
 				default:
-					halt(String.format("consumeOperand - invalid operand type 0x%x", opType));
+					halt(String.format("consumeOperand() - Invalid operand type 0x%x", opType));
 					break;
 			}
 			return result;
@@ -318,9 +318,9 @@ public class ZInterpreter {
 		public void consumeAndBranch(boolean isBranch) {
 			int branchByte1 = consumeByte();
 			boolean isBranchOnTrue = isBitSet(branchByte1, 7);
-			boolean hasByte2 = isBitClear(branchByte1, 6);
+			boolean hasBranchByte2 = isBitClear(branchByte1, 6);
 			int offset = branchByte1 & 0b11_1111;
-			if (hasByte2) {
+			if (hasBranchByte2) {
 				int branchByte2 = consumeByte();
 				offset = (offset << 8) | branchByte2;
 				if (isBitSet(offset, 13)) {
@@ -349,23 +349,23 @@ public class ZInterpreter {
 			} else if ((varNumber >= 16) && (varNumber <= 255)) {
 				value = getGlobalVariableValue(varNumber);
 			} else {
-				halt(String.format("getVariableValue - variable number %d out of bounds [%d..%d]", varNumber, 1, 255));
+				halt(String.format("getVariableValue() - Variable number %d out of bounds [%d..%d]", varNumber, 1, 255));
 			}
 			return value;
 		}
 
 		private int getLocalVariableIndex(int localVarNumber /* 1..15 */) {
-			int numLocalVars = this.stack.peek(this.stack.stackFrame + 1);
+			int numLocalVars = this.stack.peek(this.stack.stackFrameIndex + 1);
 			if ((localVarNumber < 1) || (localVarNumber > numLocalVars)) {
-				halt(String.format("getLocalVariableAddress - local variable number %d out of bounds [%d..%d]", localVarNumber, 1, numLocalVars));
+				halt(String.format("getLocalVariableAddress() - Local variable number %d out of bounds [%d..%d]", localVarNumber, 1, numLocalVars));
 			}
-			int localIndex = this.stack.stackFrame + 1 + localVarNumber;
+			int localIndex = this.stack.stackFrameIndex + 1 + localVarNumber;
 			return localIndex;
 		}
 
 		private int getGlobalVariableAddress(int globalVarNumber /* 16..255 */) {
 			if ((globalVarNumber < 16) || (globalVarNumber > 255)) {
-				halt(String.format("getGlobalVariableAddress - global variable number %d out of bounds [%d..%d]", globalVarNumber, 16, 255));
+				halt(String.format("getGlobalVariableAddress() - Global variable number %d out of bounds [%d..%d]", globalVarNumber, 16, 255));
 			}
 			int globalAddr = this.header.globalVariablesTableAddr + ((globalVarNumber - 16) * WORD_SIZE);
 			return globalAddr;
@@ -391,7 +391,7 @@ public class ZInterpreter {
 			} else if ((varNumber >= 16) && (varNumber <= 255)) {
 				setGlobalVariableValue(varNumber, value);
 			} else {
-				halt(String.format("setVariableValue - variable number %d out of bounds [%d..%d]", varNumber, 1, 255));
+				halt(String.format("setVariableValue() - Variable number %d out of bounds [%d..%d]", varNumber, 1, 255));
 			}
 		}
 
@@ -412,12 +412,12 @@ public class ZInterpreter {
 
 			int routineAddr = getUnpackedAddress(args[0]);
 			if (routineAddr >= this.header.lengthOfFile) {
-				halt(String.format("zmcall - called routine at 0x%x is out of size of story file", routineAddr));
+				halt(String.format("zmcall() - Called routine at 0x%x outside of story file", routineAddr));
 			}
 
 			int numLocals = getByte(routineAddr);
 			if (numLocals > 15) {
-				halt(String.format("zmcall - called routine at 0x%x is not a routine", routineAddr));
+				halt(String.format("zmcall() - Called routine at 0x%x not a routine", routineAddr));
 			}
 
 			if (routineAddr == 0) {
@@ -428,8 +428,8 @@ public class ZInterpreter {
 			int routineCodeAddr = routineAddr + 1 + (numLocals * WORD_SIZE);
 
 			this.stack.pushInt32(this.pc);
-			this.stack.push(this.stack.stackFrame);
-			this.stack.stackFrame = this.stack.top;
+			this.stack.push(this.stack.stackFrameIndex);
+			this.stack.stackFrameIndex = this.stack.topIndex;
 			this.stack.push(numLocals);
 			for (int i = 1; i <= numLocals; i++) {
 				int defaultValueAddr = routineAddr + 1 + ((i - 1) * WORD_SIZE);
@@ -439,16 +439,16 @@ public class ZInterpreter {
 			}
 
 			this.pc = routineCodeAddr;
-			// NOTE: implicit store operation done in zmreturn()
+			// implicit store operation done in zmreturn()
 		}
 
 		public void zmreturn(int arg) {
-			if (this.stack.stackFrame == -1) {
-				halt("zmreturn - call stack underflow");
+			if (this.stack.stackFrameIndex == -1) {
+				halt("zmreturn() - Call stack underflow");
 			}
 
-			this.stack.top = this.stack.stackFrame;
-			this.stack.stackFrame = this.stack.pop();
+			this.stack.topIndex = this.stack.stackFrameIndex;
+			this.stack.stackFrameIndex = this.stack.pop();
 			this.pc = this.stack.popInt32();
 
 			consumeAndStore(arg);
@@ -458,25 +458,25 @@ public class ZInterpreter {
 
 		//	Object table (objects are numbered 1..255, index 0 is like NIL)
 		//
-		//	    +---------+ A = 32 bit attributes numbered 0..31
-		//	  1 |AAAABCDEE| B = parent object ID
-		//	... |         | C = sibling object ID
-		//	255 |         | D = child object ID
+		//	    +---------+ A = 32 Bit attributes numbered 0..31
+		//	  1 |AAAABCDEE| B = Parent object ID
+		//	... |         | C = Sibling object ID
+		//	255 |         | D = (First) child object ID
 		//	    +---------+ E = Pointer to property
 		//
 		//	Property
 		//
-		//	+----------+ F = # words of object text
-		//	|F|GG....GG| G = object text
-		//	|H|I...I|    H = see below
-		//	|    ...   | I = (J + 1) property bytes
+		//	+----------+ F = # Words of object text
+		//	|F|GG....GG| G = Object text
+		//	|H|I...I|    H = See below
+		//	|    ...   | I = (J + 1) Property bytes
 		//	|0|
 		//	+-+
 		//
 		//	H in bits
 		//
-		//	+--------+ J = # property bytes - 1
-		//	|JJJKKKKK| K = property number (1..31)
+		//	+--------+ J = # Property bytes - 1
+		//	|JJJKKKKK| K = Property number (1..31)
 		//	+--------+
 
 		private static int NUM_PROPERTIES = 31;
@@ -484,7 +484,7 @@ public class ZInterpreter {
 
 		public int getObjectAddress(int objNumber) {
 			if ((objNumber < 1) || (objNumber > 255)) {
-				halt(String.format("getObjectAddress - object number %d out of bounds [%d..%d]", objNumber, 1, 255));
+				halt(String.format("getObjectAddress() - Object number %d out of bounds [%d..%d]", objNumber, 1, 255));
 			}
 
 			int objAddr = this.header.objectTableAddr + (NUM_PROPERTIES * WORD_SIZE) + ((objNumber - 1) * OBJECT_ELEMENT_SIZE);
@@ -595,7 +595,7 @@ public class ZInterpreter {
 		private byte[] encodeZString(String text) {
 			List<Integer> zchars = new ArrayList<Integer>();
 
-			text = text.toLowerCase(); // NOTE: Duplicate toLowerCase(), just to make sure
+			text = text.toLowerCase(); // duplicate toLowerCase(), just to make sure
 			int textLen = Math.min(text.length(), 6);
 			for (int i = 0; i < textLen; i++) {
 				char chr = text.charAt(i);
@@ -606,7 +606,7 @@ public class ZInterpreter {
 					if ((pos >= 0) & (pos <= 25)) {
 						zchars.add(6 + pos);
 					} else if ((pos >= 52) & (pos <= 77)) {
-						zchars.add(5);
+						zchars.add(0b0101);
 						zchars.add((6 + pos) - 52);
 					} else {
 						// ignore
@@ -615,7 +615,7 @@ public class ZInterpreter {
 			}
 
 			while (zchars.size() < 6) {
-				zchars.add(5);
+				zchars.add(0b0101);
 			}
 
 			byte[] result = new byte[4];
@@ -648,15 +648,15 @@ public class ZInterpreter {
 			int wordAddr = dictionaryAddr + 1 + numSeparators + 1 + 2;
 
 			for (int i = 0; i < numEntries; i++) {
-				boolean found = true;
+				boolean isFound = true;
 				for (int j = 0; j < 4; j++) {
 					byte charDictionaryWord = (byte) getByte(wordAddr + j);
 					if (charDictionaryWord != wordToSearch[j]) {
-						found = false;
+						isFound = false;
 						break;
 					}
 				}
-				if (found) {
+				if (isFound) {
 					return wordAddr;
 				}
 				wordAddr += entryLen;
@@ -682,7 +682,7 @@ public class ZInterpreter {
 
 		private int getAbbreviationAddress(int abbrIndex) {
 			if ((abbrIndex < 0) || (abbrIndex > 95)) {
-				halt(String.format("getAbbreviationAddress - index %d out of bounds [%d..%d]", abbrIndex, 0, 95));
+				halt(String.format("getAbbreviationAddress() - Index %d out of bounds [%d..%d]", abbrIndex, 0, 95));
 			}
 			int abbrAddr = this.header.abbreviationTableAddr + (abbrIndex * WORD_SIZE);
 			return getUnpackedAddress(getWord(abbrAddr));
@@ -726,16 +726,19 @@ public class ZInterpreter {
 		public boolean isDynamicMemory(int addr) {
 			int minDynamicMemory = 0;
 			int maxDynamicMemory = this.header.baseStaticMemoryAddr - 1;
-			return (addr >= minDynamicMemory) && (addr <= maxDynamicMemory);
+			boolean isDynamicMemory = (addr >= minDynamicMemory) && (addr <= maxDynamicMemory);
+			return isDynamicMemory;
 		}
 
 		public boolean isDynamicOrStaticMemory(int addr) {
 			int bounds = Math.min(0xFFFF, this.story.length);
-			return addr <= bounds;
+			boolean isDynamicOrStaticMemory = addr <= bounds;
+			return isDynamicOrStaticMemory;
 		}
 
 		public boolean isHighMemory(int addr) {
-			return addr >= this.header.baseHighMemoryAddr;
+			boolean isHighMemory = addr >= this.header.baseHighMemoryAddr;
+			return isHighMemory;
 		}
 
 		//
@@ -756,21 +759,21 @@ public class ZInterpreter {
 	private boolean isShowScoreUpdates;
 	private Scanner scanner;
 	private StringBuffer buffer;
+	private int oldScore;
 
 	public ZInterpreter(Path storyFilePath, boolean isShowScoreUpdates) {
 		this.storyFilePath = storyFilePath;
 		this.isShowScoreUpdates = isShowScoreUpdates;
 		this.scanner = new Scanner(System.in);
 		this.buffer = new StringBuffer();
+		this.oldScore = 0;
 	}
-
-	private int oldScore = 0;
 
 	private void restoreScore() {
 		this.oldScore = this.zm.toInt32(this.zm.getVariableValue(17));
 	}
 
-	private void checkScore() {
+	private void checkForScoreUpdate() {
 		if (this.isShowScoreUpdates == false) {
 			return;
 		}
@@ -782,9 +785,9 @@ public class ZInterpreter {
 
 			String scoreString = null;
 			if (scoreDelta > 0) {
-				scoreString = String.format("[Your score increased by %d points. Your current score is %d points.]\n\n", scoreDelta, newScore);
+				scoreString = String.format("[Your score increased by %d points. Your current score is %d points.]" + ZMachine.EOL + ZMachine.EOL, scoreDelta, newScore);
 			} else if (scoreDelta < 0) {
-				scoreString = String.format("[Your score decreased by %d points. Your current score is %d points.]\n\n", -scoreDelta, newScore);
+				scoreString = String.format("[Your score decreased by %d points. Your current score is %d points.]" + ZMachine.EOL + ZMachine.EOL, -scoreDelta, newScore);
 			}
 			if (scoreString != null) {
 				int pos = this.buffer.length() - 1;
@@ -796,7 +799,7 @@ public class ZInterpreter {
 	}
 
 	private String getInput() {
-		checkScore();
+		checkForScoreUpdate();
 		flush();
 		return this.scanner.nextLine();
 	}
@@ -848,7 +851,7 @@ public class ZInterpreter {
 			if ((posNextSpace - posLineStart) <= maxChars) {
 				System.out.print(str.substring(i, posNextSpace));
 				i = posNextSpace;
-			} else { // if ((posNextSpace - posStartLine) > maxChars) {
+			} else {
 				if (posNextWord == posLineStart) {
 					System.out.print(str.substring(i, i + maxChars));
 					i = i + maxChars;
@@ -890,7 +893,7 @@ public class ZInterpreter {
 		// ignore
 	}
 
-	private void Z_save() { // BRANCH
+	private void Z_save() { // BRANCH OP
 		boolean isBranch = true;
 
 		print("File to save? >");
@@ -918,8 +921,8 @@ public class ZInterpreter {
 		result.append(String.format("%04x", this.zm.pc) + CR);
 
 		result.append("stack" + CR);
-		result.append(String.format("%04x", this.zm.stack.top + 1) + CR);
-		for (int i = 0; i <= this.zm.stack.top; i++) {
+		result.append(String.format("%04x", this.zm.stack.topIndex + 1) + CR);
+		for (int i = 0; i <= this.zm.stack.topIndex; i++) {
 			if ((i > 0) && ((i % NUM_BYTES_IN_ROW) == 0)) {
 				result.append(CR);
 			}
@@ -927,11 +930,11 @@ public class ZInterpreter {
 		}
 		result.append(CR);
 
-		result.append("stack.top" + CR);
-		result.append(String.format("%04x", this.zm.stack.top) + CR);
+		result.append("stack.topindex" + CR);
+		result.append(String.format("%04x", this.zm.stack.topIndex) + CR);
 
-		result.append("stack.stackframe" + CR);
-		result.append(String.format("%04x", this.zm.stack.stackFrame) + CR);
+		result.append("stack.stackframeindex" + CR);
+		result.append(String.format("%04x", this.zm.stack.stackFrameIndex) + CR);
 
 		result.append("dynamicmemory" + CR);
 		result.append(String.format("%04x", this.zm.header.baseStaticMemoryAddr) + CR);
@@ -945,7 +948,7 @@ public class ZInterpreter {
 		return result.toString();
 	}
 
-	private void Z_restore() { // BRANCH
+	private void Z_restore() { // BRANCH OP
 		boolean isBranch = true;
 
 		print("File to restore? >");
@@ -959,12 +962,12 @@ public class ZInterpreter {
 		}
 
 		int newPc = -1;
-		int newStackTop = -1;
-		int newStackFrame = -1;
+		int newStackTopIndex = -1;
+		int newStackFrameIndex = -1;
 		int[] newStack = null;
 		byte[] newDynamicMemory = null;
 
-		if (lines != null) {
+		if (isBranch && (lines != null)) {
 			int lineCnt = 0;
 			while (lineCnt < lines.size()) {
 				String line = lines.get(lineCnt);
@@ -979,25 +982,23 @@ public class ZInterpreter {
 					}
 				} else if (line.equals("pc")) {
 					lineCnt++;
-					newPc = hexToInteger(lines.get(lineCnt));
-				} else if (line.equals("stack.top")) {
+					newPc = Integer.parseInt(lines.get(lineCnt), 16);
+				} else if (line.equals("stack.topindex")) {
 					lineCnt++;
-					newStackTop = hexToInteger(lines.get(lineCnt));
-				} else if (line.equals("stack.stackframe")) {
+					newStackTopIndex = Integer.parseInt(lines.get(lineCnt), 16);
+				} else if (line.equals("stack.stackframeindex")) {
 					lineCnt++;
-					newStackFrame = hexToInteger(lines.get(lineCnt));
+					newStackFrameIndex = Integer.parseInt(lines.get(lineCnt), 16);
 				} else if (line.equals("stack")) {
 					lineCnt++;
-					int newStackLen = hexToInteger(lines.get(lineCnt));
+					int newStackLen = Integer.parseInt(lines.get(lineCnt), 16);
 					newStack = new int[newStackLen];
 
 					int j = 0;
 					lineCnt++;
 					while (lineCnt < lines.size()) {
 						String[] aStr = lines.get(lineCnt).split(" ");
-						try {
-							Integer.parseInt(aStr[0], 16);
-						} catch (NumberFormatException e) {
+						if (isHexNumber(aStr[0]) == false) {
 							lineCnt--;
 							break;
 						}
@@ -1009,19 +1010,18 @@ public class ZInterpreter {
 					}
 				} else if (line.equals("dynamicmemory")) {
 					lineCnt++;
-					int newDynamicMemoryLen = hexToInteger(lines.get(lineCnt));
+					int newDynamicMemoryLen = Integer.parseInt(lines.get(lineCnt), 16);
 					newDynamicMemory = new byte[newDynamicMemoryLen + 1];
 
 					int j = 0;
 					lineCnt++;
 					while (lineCnt < lines.size()) {
 						String[] aStr = lines.get(lineCnt).split(" ");
-						try {
-							Integer.parseInt(aStr[0], 16);
-						} catch (NumberFormatException e) {
+						if (isHexNumber(aStr[0]) == false) {
 							lineCnt--;
 							break;
 						}
+
 						for (int i = 0; i < aStr.length; i++) {
 							newDynamicMemory[j] = (byte) Integer.parseInt(aStr[i], 16);
 							j++;
@@ -1033,11 +1033,11 @@ public class ZInterpreter {
 			}
 		}
 
-		boolean isComplete = (newPc != -1) && (newStackTop != -1) && (newStackFrame != -1) && ((newStack != null) & (newDynamicMemory != null));
+		boolean isComplete = (newPc != -1) && (newStackTopIndex != -1) && (newStackFrameIndex != -1) && ((newStack != null) & (newDynamicMemory != null));
 		if (isComplete) {
 			this.zm.pc = newPc;
-			this.zm.stack.top = newStackTop;
-			this.zm.stack.stackFrame = newStackFrame;
+			this.zm.stack.topIndex = newStackTopIndex;
+			this.zm.stack.stackFrameIndex = newStackFrameIndex;
 			System.arraycopy(newStack, 0, this.zm.stack.stack, 0, newStack.length);
 			System.arraycopy(newDynamicMemory, 0, this.zm.story, 0, newDynamicMemory.length);
 		} else {
@@ -1049,11 +1049,13 @@ public class ZInterpreter {
 		restoreScore();
 	}
 
-	private int hexToInteger(String str) {
-		try (Scanner scanner = new Scanner(str)) {
-			String strHexWord = scanner.next();
-			return Integer.parseInt(strHexWord, 16);
+	private boolean isHexNumber(String str) {
+		try {
+			Integer.parseInt(str, 16);
+		} catch (NumberFormatException e) {
+			return false;
 		}
+		return true;
 	}
 
 	private void Z_restart() {
@@ -1091,7 +1093,7 @@ public class ZInterpreter {
 		// ignore
 	}
 
-	private void Z_verify() { // BRANCH
+	private void Z_verify() { // BRANCH OP
 		// ignore
 		boolean isBranch = true;
 		this.zm.consumeAndBranch(isBranch);
@@ -1099,12 +1101,12 @@ public class ZInterpreter {
 
 	// 1OP instructions
 
-	private void Z_jz(int arg) { // BRANCH
+	private void Z_jz(int arg) { // BRANCH OP
 		boolean isBranch = (arg == 0);
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_get_sibling(int arg) { // STORE + BRANCH
+	private void Z_get_sibling(int arg) { // STORE + BRANCH OP
 		int siblingNumber = this.zm.getSiblingNumber(arg);
 		this.zm.consumeAndStore(siblingNumber);
 
@@ -1112,7 +1114,7 @@ public class ZInterpreter {
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_get_child(int arg) { // STORE + BRANCH
+	private void Z_get_child(int arg) { // STORE + BRANCH OP
 		int childNumber = this.zm.getChildNumber(arg);
 		this.zm.consumeAndStore(childNumber);
 
@@ -1120,15 +1122,15 @@ public class ZInterpreter {
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_get_parent(int arg) { // STORE
+	private void Z_get_parent(int arg) { // STORE OP
 		int parentNumber = this.zm.getParentNumber(arg);
 		this.zm.consumeAndStore(parentNumber);
 	}
 
-	private void Z_get_prop_len(int arg) { // STORE
+	private void Z_get_prop_len(int arg) { // STORE OP
 		int propertyAddr = arg;
 		if (propertyAddr == 0) {
-			halt(String.format("Z_get_prop_len - address 0x%x is invalid", propertyAddr));
+			halt(String.format("Z_get_prop_len() - Address 0x%x invalid", propertyAddr));
 		}
 
 		int value = (this.zm.getByte(propertyAddr - 1) >> 5) + 1;
@@ -1154,7 +1156,7 @@ public class ZInterpreter {
 			String str = this.zm.decodeZString(arg);
 			print(str);
 		} else {
-			halt(String.format("Z_print_addr - address 0x%x not in dynamic or static memory", arg));
+			halt(String.format("Z_print_addr() - Address 0x%x not in dynamic or static memory", arg));
 		}
 	}
 
@@ -1162,7 +1164,7 @@ public class ZInterpreter {
 		int objNumber = arg;
 
 		if (objNumber == 0) {
-			halt("Z_remove_obj - remove object number 0");
+			halt("Z_remove_obj() - Remove object number 0");
 		}
 
 		int parentNumber = this.zm.getParentNumber(objNumber);
@@ -1209,16 +1211,16 @@ public class ZInterpreter {
 			String str = this.zm.decodeZString(addr);
 			print(str);
 		} else {
-			halt(String.format("Z_print_paddr - address 0x%x not in high memory", arg));
+			halt(String.format("Z_print_paddr() - Address 0x%x not in high memory", arg));
 		}
 	}
 
-	private void Z_load(int arg) { // STORE
+	private void Z_load(int arg) { // STORE OP
 		int value = this.zm.getVariableValue(arg);
 		this.zm.consumeAndStore(value);
 	}
 
-	private void Z_not(int arg) { // STORE
+	private void Z_not(int arg) { // STORE OP
 		int value = this.zm.toUint16(arg);
 		int result = value ^ 0xFFFF;
 		this.zm.consumeAndStore(result);
@@ -1227,7 +1229,7 @@ public class ZInterpreter {
 	// 2OP instructions
 
 	// NOTE: JE can take 2..4 operands
-	private void Z_je(int args[]) { // BRANCH
+	private void Z_je(int args[]) { // BRANCH OP
 		boolean isBranch = false;
 		for (int i = 1; i < args.length; i++) {
 			if (args[0] == args[i]) {
@@ -1238,21 +1240,21 @@ public class ZInterpreter {
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_jl(int args[]) { // BRANCH
+	private void Z_jl(int args[]) { // BRANCH OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		boolean isBranch = value1 < value2;
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_jg(int args[]) { // BRANCH
+	private void Z_jg(int args[]) { // BRANCH OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		boolean isBranch = value1 > value2;
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_dec_chk(int args[]) { // BRANCH
+	private void Z_dec_chk(int args[]) { // BRANCH OP
 		int varNumber = args[0];
 		int value = args[1];
 
@@ -1263,7 +1265,7 @@ public class ZInterpreter {
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_inc_chk(int args[]) { // BRANCH
+	private void Z_inc_chk(int args[]) { // BRANCH OP
 		int varNumber = args[0];
 		int value = args[1];
 
@@ -1274,7 +1276,7 @@ public class ZInterpreter {
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_jin(int args[]) { // BRANCH
+	private void Z_jin(int args[]) { // BRANCH OP
 		int objNumberChild = args[0];
 		int objNumberParent = args[1];
 
@@ -1283,32 +1285,32 @@ public class ZInterpreter {
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_test(int args[]) { // BRANCH
-		int bitmap = this.zm.toUint16(args[0]); // TODO: Conversion necessary?
+	private void Z_test(int args[]) { // BRANCH OP
+		int bitmap = this.zm.toUint16(args[0]); // is conversion necessary?
 		int flags = this.zm.toUint16(args[1]);
 		boolean isBranch = (bitmap & flags) == flags;
 		this.zm.consumeAndBranch(isBranch);
 	}
 
-	private void Z_or(int args[]) { // STORE
+	private void Z_or(int args[]) { // STORE OP
 		int value1 = this.zm.toUint16(args[0]);
 		int value2 = this.zm.toUint16(args[1]);
 		int result = value1 | value2;
 		this.zm.consumeAndStore(result);
 	}
 
-	private void Z_and(int args[]) { // STORE
+	private void Z_and(int args[]) { // STORE OP
 		int value1 = this.zm.toUint16(args[0]);
 		int value2 = this.zm.toUint16(args[1]);
 		int result = value1 & value2;
 		this.zm.consumeAndStore(result);
 	}
 
-	private void Z_test_attr(int args[]) { // BRANCH
+	private void Z_test_attr(int args[]) { // BRANCH OP
 		int objNumber = args[0];
 		int bitNumber = args[1];
 		if ((bitNumber < 0) || (bitNumber > 31)) {
-			halt(String.format("Z_test_attr - bitnumber %d out of bounds [%d..%d]", bitNumber, 0, 31));
+			halt(String.format("Z_test_attr() - Bit number %d out of bounds [%d..%d]", bitNumber, 0, 31));
 		}
 
 		int objAddr = this.zm.getObjectAddress(objNumber);
@@ -1324,7 +1326,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int bitNumber = args[1];
 		if ((bitNumber < 0) || (bitNumber > 31)) {
-			halt(String.format("Z_set_attr - bitnumber %d out of bounds [%d..%d]", bitNumber, 0, 31));
+			halt(String.format("Z_set_attr() - Bit number %d out of bounds [%d..%d]", bitNumber, 0, 31));
 		}
 
 		int objAddr = this.zm.getObjectAddress(objNumber);
@@ -1339,7 +1341,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int bitNumber = args[1];
 		if ((bitNumber < 0) || (bitNumber > 31)) {
-			halt(String.format("Z_set_attr - bitnumber %d out of bounds [%d..%d]", bitNumber, 0, 31));
+			halt(String.format("Z_set_attr() - Bit number %d out of bounds [%d..%d]", bitNumber, 0, 31));
 		}
 
 		int objAddr = this.zm.getObjectAddress(objNumber);
@@ -1360,7 +1362,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int destObjNumber = args[1];
 		if (objNumber == destObjNumber) {
-			halt(String.format("Z_insert_obj - insert object number %d to itself", objNumber));
+			halt(String.format("Z_insert_obj() - Insert object number %d to itself", objNumber));
 		}
 
 		if (destObjNumber == this.zm.getParentNumber(objNumber)) {
@@ -1374,27 +1376,27 @@ public class ZInterpreter {
 		this.zm.setParentNumber(objNumber, destObjNumber);
 	}
 
-	private void Z_loadw(int args[]) { // STORE
+	private void Z_loadw(int args[]) { // STORE OP
 		int addr = args[0] + (args[1] * ZMachine.WORD_SIZE);
 		if (this.zm.isDynamicOrStaticMemory(addr)) {
 			int result = this.zm.getWord(addr);
 			this.zm.consumeAndStore(result);
 		} else {
-			halt(String.format("Z_loadw - address 0x%x not in dynamic or static memory", addr));
+			halt(String.format("Z_loadw() - Address 0x%x not in dynamic or static memory", addr));
 		}
 	}
 
-	private void Z_loadb(int args[]) { // STORE
+	private void Z_loadb(int args[]) { // STORE OP
 		int addr = args[0] + args[1];
 		if (this.zm.isDynamicOrStaticMemory(addr)) {
 			int result = this.zm.getByte(addr);
 			this.zm.consumeAndStore(result);
 		} else {
-			halt(String.format("Z_loadb - address 0x%x not in dynamic or static memory", addr));
+			halt(String.format("Z_loadb() - Address 0x%x not in dynamic or static memory", addr));
 		}
 	}
 
-	private void Z_get_prop(int args[]) { // STORE
+	private void Z_get_prop(int args[]) { // STORE OP
 		int objNumber = args[0];
 		int propNumber = args[1];
 
@@ -1408,7 +1410,7 @@ public class ZInterpreter {
 			} else if (propLen == 2) {
 				propValue = this.zm.getWord(propAddr + 1);
 			} else {
-				halt(String.format("Z_get_prop - property length %d of property %d of object %d is out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
+				halt(String.format("Z_get_prop() - Property length %d of property %d of object %d out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
 			}
 		} else {
 			int defaultValueAddr = this.zm.header.objectTableAddr + ((propNumber - 1) * ZMachine.WORD_SIZE);
@@ -1417,7 +1419,7 @@ public class ZInterpreter {
 		this.zm.consumeAndStore(propValue);
 	}
 
-	private void Z_get_prop_addr(int args[]) { // STORE
+	private void Z_get_prop_addr(int args[]) { // STORE OP
 		int objNumber = args[0];
 		int propNumber = args[1];
 
@@ -1426,13 +1428,13 @@ public class ZInterpreter {
 		this.zm.consumeAndStore(value);
 	}
 
-	private void Z_get_next_prop(int args[]) { // STORE
+	private void Z_get_next_prop(int args[]) { // STORE OP
 		int objNumber = args[0];
 		int propNumber = args[1];
 
 		int propAddr = getPropAddress(objNumber, propNumber, /* isAcceptPropNumberZero */ true);
 		if (propAddr == 0) {
-			halt(String.format("Z_get_next_prop - next property of property number %d of object %d not found", propNumber, objNumber));
+			halt(String.format("Z_get_next_prop() - Next property of property number %d of object %d not found", propNumber, objNumber));
 		}
 
 		int propValue = -1;
@@ -1448,43 +1450,43 @@ public class ZInterpreter {
 		this.zm.consumeAndStore(propValue);
 	}
 
-	private void Z_add(int args[]) { // STORE
+	private void Z_add(int args[]) { // STORE OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		int result = this.zm.toUint16(value1 + value2);
 		this.zm.consumeAndStore(result);
 	}
 
-	private void Z_sub(int args[]) { // STORE
+	private void Z_sub(int args[]) { // STORE OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		int result = this.zm.toUint16(value1 - value2);
 		this.zm.consumeAndStore(result);
 	}
 
-	private void Z_mul(int args[]) { // STORE
+	private void Z_mul(int args[]) { // STORE OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		int result = this.zm.toUint16(value1 * value2);
 		this.zm.consumeAndStore(result);
 	}
 
-	private void Z_div(int args[]) { // STORE
+	private void Z_div(int args[]) { // STORE OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		if (value2 == 0) {
-			halt("Z_div - divison by zero");
+			halt("Z_div() - Divison by zero");
 		}
 
 		int result = this.zm.toUint16(value1 / value2);
 		this.zm.consumeAndStore(result);
 	}
 
-	private void Z_mod(int args[]) {// STORE
+	private void Z_mod(int args[]) {// STORE OP
 		int value1 = this.zm.toInt32(args[0]);
 		int value2 = this.zm.toInt32(args[1]);
 		if (value2 == 0) {
-			halt("Z_mod - modulo division by zero");
+			halt("Z_mod() - Modulo division by zero");
 		}
 
 		int result = this.zm.toUint16(value1 % value2);
@@ -1493,9 +1495,9 @@ public class ZInterpreter {
 
 	// VAR instructions
 
-	private void Z_call(int args[]) { // STORE
+	private void Z_call(int args[]) { // STORE OP
 		this.zm.zmcall(args);
-		// NOTE: Store is done in Z_ret()
+		// store is done in Z_ret()
 	}
 
 	private void Z_storew(int args[]) {
@@ -1505,7 +1507,7 @@ public class ZInterpreter {
 		if (this.zm.isDynamicMemory(addr)) {
 			this.zm.setWord(addr, value);
 		} else {
-			halt(String.format("Z_storew - address 0x%x not in dynamic memory", addr));
+			halt(String.format("Z_storew() - Address 0x%x not in dynamic memory", addr));
 		}
 	}
 
@@ -1516,7 +1518,7 @@ public class ZInterpreter {
 		if (this.zm.isDynamicMemory(addr)) {
 			this.zm.setByte(addr, value);
 		} else {
-			halt(String.format("Z_storeb - address 0x%x not in dynamic memory", addr));
+			halt(String.format("Z_storeb() - Address 0x%x not in dynamic memory", addr));
 		}
 	}
 
@@ -1525,7 +1527,7 @@ public class ZInterpreter {
 
 		int minAcceptedPropNumber = isAcceptPropNumberZero ? 0 : 1;
 		if ((propNumber < minAcceptedPropNumber) || (propNumber > 255)) {
-			halt(String.format("getPropAddress - property number %d of object %d out of bounds [%d..%d]", propNumber, objNumber, minAcceptedPropNumber, 31));
+			halt(String.format("getPropAddress() - Property number %d of object %d out of bounds [%d..%d]", propNumber, objNumber, minAcceptedPropNumber, 31));
 		}
 
 		int propAddr = this.zm.getWord(objAddr + 7);
@@ -1566,10 +1568,10 @@ public class ZInterpreter {
 			} else if (propLen == 2) {
 				this.zm.setWord(propAddr + 1, value);
 			} else {
-				halt(String.format("Z_put_prop - property length %d of property %d of object %d out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
+				halt(String.format("Z_put_prop() - Property length %d of property %d of object %d out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
 			}
 		} else {
-			halt(String.format("Z_put_prop - property number %d of object %d not found", propNumber, objNumber));
+			halt(String.format("Z_put_prop() - Property number %d of object %d not found", propNumber, objNumber));
 		}
 	}
 
@@ -1578,7 +1580,7 @@ public class ZInterpreter {
 		int parseAddr = args[1];
 
 		if (this.zm.getByte(textAddr) < 3) {
-			halt("Z_sread - text buffer is less than 3 bytes long");
+			halt("Z_sread() - Text buffer less than 3 bytes long");
 		}
 
 		// TODO: Show status line
@@ -1595,15 +1597,15 @@ public class ZInterpreter {
 
 		int maxWordsToParse = this.zm.getByte(parseAddr);
 		if (maxWordsToParse < 1) {
-			halt("Z_sread - parse buffer is less than 1 word long");
+			halt("Z_sread() - Parse buffer less than 1 word long");
 		}
 
 		String wordSeparators = this.zm.getWordSeparators();
-		List<Integer> posWords = new ArrayList<Integer>();
-		List<String> strWords = new ArrayList<String>();
+		List<Integer> wordStartPos = new ArrayList<Integer>();
+		List<String> wordTexts = new ArrayList<String>();
 
 		int pos = 0;
-		int start = -1;
+		int startPos = -1;
 		boolean isAddCharacters = false;
 
 		while (pos < input.length()) {
@@ -1614,36 +1616,36 @@ public class ZInterpreter {
 
 			if (isWordSeparator || isWhitespace) {
 				if (isAddCharacters) {
-					posWords.add(start);
-					strWords.add(input.substring(start, pos));
+					wordStartPos.add(startPos);
+					wordTexts.add(input.substring(startPos, pos));
 					isAddCharacters = false;
 				}
 				if (isWordSeparator) {
-					posWords.add(pos);
-					strWords.add(chr);
+					wordStartPos.add(pos);
+					wordTexts.add(chr);
 				}
 			} else {
 				if (isAddCharacters == false) {
-					start = pos;
+					startPos = pos;
 					isAddCharacters = true;
 				}
 			}
 			pos++;
 		}
 		if (isAddCharacters) {
-			posWords.add(start);
-			strWords.add(input.substring(start, pos));
+			wordStartPos.add(startPos);
+			wordTexts.add(input.substring(startPos, pos));
 		}
 
-		int numWordsToParse = Math.min(maxWordsToParse, strWords.size());
+		int numWordsToParse = Math.min(maxWordsToParse, wordTexts.size());
 		this.zm.setByte(parseAddr + 1, numWordsToParse);
 
 		for (int i = 0; i < numWordsToParse; i++) {
-			String word = strWords.get(i);
+			String word = wordTexts.get(i);
 
 			int wordAddr = this.zm.getWordAddr(word);
 			int wordLen = word.length();
-			int wordPos = posWords.get(i) + 1; // offset to text-buffer
+			int wordPos = wordStartPos.get(i) + 1; // offset to text-buffer
 
 			int wordOffset = parseAddr + 1 + 1 + (i * 4);
 			this.zm.setWord(wordOffset, wordAddr);
@@ -1666,7 +1668,7 @@ public class ZInterpreter {
 		print(String.format("%d", value));
 	}
 
-	private void Z_random(int args[]) { // STORE
+	private void Z_random(int args[]) { // STORE OP
 		int arg = this.zm.toInt32(args[0]);
 		int value = this.zm.random(arg);
 		this.zm.consumeAndStore(value);
@@ -2013,7 +2015,7 @@ public class ZInterpreter {
 		throw new RuntimeException("Z-Interpreter halted: " + errorMessage);
 	}
 
-	private static final String CR = System.getProperty("line.separator");
+	private static final String CR = System.getProperty("line.separator"); // platform-dependent EOL
 
 	private static final String BANNER = "" + //
 			" ____      ___     _                        _           " + CR + //
@@ -2021,7 +2023,7 @@ public class ZInterpreter {
 			" / / |___| | || ' \\  _/ -_) '_| '_ \\ '_/ -_)  _/ -_) '_|" + CR + //
 			"/___|     |___|_||_\\__\\___|_| | .__/_| \\___|\\__\\___|_|  " + CR + //
 			"                              |_|                       " + CR + //
-			"Version 1.0 (31-DEC-2020) (C) by Lorenz Wiest" + CR;
+			"Version 1.1 (04-FEB-2021) (C) by Lorenz Wiest" + CR;
 
 	private static final String HELP = "" + //
 			"Usage: java ZInterpreter [<options>] <story-file>" + CR + //
