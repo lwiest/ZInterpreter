@@ -58,7 +58,7 @@ Enjoy! &mdash; Lorenz
     / / |___| | || ' \  _/ -_) '_| '_ \ '_/ -_)  _/ -_) '_|
    /___|     |___|_||_\__\___|_| | .__/_| \___|\__\___|_|  
                                  |_|                       
-   Version 1.1 (04-FEB-2021) (C) by Lorenz Wiest
+   Version 1.2 (09-FEB-2021) (C) by Lorenz Wiest
 
    Usage: java ZInterpreter [<options>] <story-file>
    Options: -showScoreUpdates | Prints information about the score whenever the score changes.

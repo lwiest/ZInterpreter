@@ -1129,11 +1129,10 @@ public class ZInterpreter {
 
 	private void Z_get_prop_len(int arg) { // STORE OP
 		int propertyAddr = arg;
-		if (propertyAddr == 0) {
-			halt(String.format("Z_get_prop_len() - Address 0x%x invalid", propertyAddr));
+		int value = 0;
+		if (propertyAddr != 0) {
+			value = (this.zm.getByte(propertyAddr - 1) >> 5) + 1;
 		}
-
-		int value = (this.zm.getByte(propertyAddr - 1) >> 5) + 1;
 		this.zm.consumeAndStore(value);
 	}
 
@@ -2023,7 +2022,7 @@ public class ZInterpreter {
 			" / / |___| | || ' \\  _/ -_) '_| '_ \\ '_/ -_)  _/ -_) '_|" + CR + //
 			"/___|     |___|_||_\\__\\___|_| | .__/_| \\___|\\__\\___|_|  " + CR + //
 			"                              |_|                       " + CR + //
-			"Version 1.1 (04-FEB-2021) (C) by Lorenz Wiest" + CR;
+			"Version 1.2 (09-FEB-2021) (C) by Lorenz Wiest" + CR;
 
 	private static final String HELP = "" + //
 			"Usage: java ZInterpreter [<options>] <story-file>" + CR + //
