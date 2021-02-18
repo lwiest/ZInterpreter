@@ -76,7 +76,7 @@ Enjoy! &mdash; Lorenz
     / / |___| | || ' \  _/ -_) '_| '_ \ '_/ -_)  _/ -_) '_|
    /___|     |___|_||_\__\___|_| | .__/_| \___|\__\___|_|  
                                  |_|                       
-   Version 1.0 (31-DEC-2020) (C) by Lorenz Wiest
+   Version 1.2 (09-FEB-2021) (C) by Lorenz Wiest
 
    ZORK I: The Great Underground Empire
    Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.
