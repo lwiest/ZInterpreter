@@ -922,7 +922,7 @@ public class ZInterpreter {
 
 		result.append("stack" + CR);
 		result.append(String.format("%04x", this.zm.stack.topIndex + 1) + CR);
-		for (int i = 0; i <= this.zm.stack.topIndex; i++) {
+		for (int i = 0; i < (this.zm.stack.topIndex + 1); i++) {
 			if ((i > 0) && ((i % NUM_BYTES_IN_ROW) == 0)) {
 				result.append(CR);
 			}
@@ -1011,7 +1011,7 @@ public class ZInterpreter {
 				} else if (line.equals("dynamicmemory")) {
 					lineCnt++;
 					int newDynamicMemoryLen = Integer.parseInt(lines.get(lineCnt), 16);
-					newDynamicMemory = new byte[newDynamicMemoryLen + 1];
+					newDynamicMemory = new byte[newDynamicMemoryLen];
 
 					int j = 0;
 					lineCnt++;
@@ -2022,7 +2022,7 @@ public class ZInterpreter {
 			" / / |___| | || ' \\  _/ -_) '_| '_ \\ '_/ -_)  _/ -_) '_|" + CR + //
 			"/___|     |___|_||_\\__\\___|_| | .__/_| \\___|\\__\\___|_|  " + CR + //
 			"                              |_|                       " + CR + //
-			"Version 1.2 (09-FEB-2021) (C) by Lorenz Wiest" + CR;
+			"Version 1.3 (13-MAR-2021) (C) by Lorenz Wiest" + CR;
 
 	private static final String HELP = "" + //
 			"Usage: java ZInterpreter [<options>] <story-file>" + CR + //
