@@ -34,9 +34,10 @@ Enjoy! &mdash; Lorenz
 
 ## Table of Contents
 * [Getting Started](#getting-started)
+* [Where Do I Get Infocom Story Files?](#where-do-i-get-infocom-story-files)
+* [Can I Play Adventure With This, Too?](#can-i-play-adventure-with-this-too)
 * [Build Instructions](#build-instructions)
 * [Known Limitations](#known-limitations)
-* [Where Do I Get Infocom Story Files?](#where-do-i-get-infocom-story-files)
 * [Licence](#license)
 
 ## Getting Started
@@ -91,6 +92,13 @@ Enjoy! &mdash; Lorenz
    >_
    ```
 
+## Where Do I Get Infocom Story Files?
+You can find free story files of Zork I, II, and III [here](http://www.infocom-if.org/downloads/downloads.html). The story files `ZORK1.DAT`, `ZORK2.DAT`, 
+and `ZORK3.DAT` are contained in the downloadable archives. The story files of other Infocom games are available elsewhere, but not in this GitHub repository. An Internet search may help.
+
+## Can I Play Adventure With This, Too?
+Yes. I created a [story file](adventure/Adventure.dat) for [Adventure](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) from a [version by Jesse McGrew et al.](https://www.ifarchive.org/if-archive/infocom/compilers/zilf/zilf-0.8.zip) plus a [map](adventure/Adventure.Map.pdf) and a [map without hints](adventure/Adventure.MapWithoutHints.pdf). They are part of this project.
+
 ## Build Instructions
 
 ### Prerequisites
@@ -115,10 +123,6 @@ Z-Interpreter implements a Z-machine of version 3 as described in [The Z-Machine
 * No support of sounds
 * No support of redirecting input and output
 * No support of writing text at arbitrary screen locations (as this implementation uses a teletype output metaphor). Incidentally, this is the reason for the limited support of Seastalker, which uses a split screen.
-
-## Where Do I Get Infocom Story Files?
-You can find free story files of Zork I, II, and III [here](http://www.infocom-if.org/downloads/downloads.html). The story files `ZORK1.DAT`, `ZORK2.DAT`, 
-and `ZORK3.DAT` are contained in the downloadable archives. The story files of other Infocom games are available elsewhere, but not in this GitHub repository. An Internet search may help.
 
 ## License
 This project is available under the MIT license.
