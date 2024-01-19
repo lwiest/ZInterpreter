@@ -13,7 +13,6 @@ Z-Interpreter implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-m
 [_Hollywood Hijinx_](https://en.wikipedia.org/wiki/Hollywood_Hijinx),
 [_Infidel_](https://en.wikipedia.org/wiki/Infidel_(video_game)),
 [_Leather Goddesses of Phobos_](https://en.wikipedia.org/wiki/Leather_Goddesses_of_Phobos),
-
 [_Lurking Horror_](https://en.wikipedia.org/wiki/The_Lurking_Horror),
 [_Moonmist_](https://en.wikipedia.org/wiki/Moonmist),
 [_Planetfall_](https://en.wikipedia.org/wiki/Planetfall),
@@ -22,7 +21,6 @@ Z-Interpreter implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-m
 [_Sorcerer_](https://en.wikipedia.org/wiki/Sorcerer_(video_game)),
 [_Spellbreaker_](https://en.wikipedia.org/wiki/Spellbreaker),
 [_Starcross_](https://en.wikipedia.org/wiki/Starcross_(video_game)),
-
 [_Stationfall_](https://en.wikipedia.org/wiki/Stationfall),
 [_Suspect_](https://en.wikipedia.org/wiki/Suspect_(video_game)),
 [_Suspended_](https://en.wikipedia.org/wiki/Suspended_(video_game)),
