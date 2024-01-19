@@ -97,7 +97,7 @@ You can find free story files of _Zork I_, _Zork II_, and _Zork III_ [here](http
 and `ZORK3.DAT` are contained in the downloadable archives. Story files of other Infocom games are available elsewhere, but not in this GitHub repository. An Internet search may help.
 
 ## Can I Play _Adventure_ With This, Too?
-Yes. I created a [story file](adventure/Adventure.dat) for [Adventure](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) from a [version by Jesse McGrew et al.](https://www.ifarchive.org/if-archive/infocom/compilers/zilf/zilf-0.8.zip) plus a [map](adventure/Adventure.Map.pdf) and a [map without hints](adventure/Adventure.MapWithoutHints.pdf). They are all part of this GitHub repository.
+Yes. I created a [story file](adventure/Adventure.dat) for [_Adventure_](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) from a [version by Jesse McGrew et al.](https://www.ifarchive.org/if-archive/infocom/compilers/zilf/zilf-0.8.zip) plus a [map](adventure/Adventure.Map.pdf) and a [map without hints](adventure/Adventure.MapWithoutHints.pdf). They are all part of this GitHub repository.
 
 ## Build Instructions
 
