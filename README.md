@@ -5,15 +5,32 @@ It is written in Java.
 
 Z-Interpreter implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-machine), a virtual computer developed for playing text adventures. This Z-Interpreter implementation can play text adventures (compiled into "story files") for version 3 of the Z-machine. This applies to many of Infocom's classic text adventures, such as:
 
-|---|---|---|
-| [_Ballyhoo_](https://en.wikipedia.org/wiki/Ballyhoo_(video_game)) | [Lurking Horror](https://en.wikipedia.org/wiki/The_Lurking_Horror) | [Stationfall](https://en.wikipedia.org/wiki/Stationfall) |
-| [_Cutthroats_](https://en.wikipedia.org/wiki/Cutthroats_(video_game)) | [Moonmist](https://en.wikipedia.org/wiki/Moonmist) | [Suspect](https://en.wikipedia.org/wiki/Suspect_(video_game)) |
-| [_Deadline_](https://en.wikipedia.org/wiki/Deadline_(video_game)) | [Planetfall](https://en.wikipedia.org/wiki/Planetfall) | [Planetfall](https://en.wikipedia.org/wiki/Planetfall) |
-| [_Enchanter_](https://en.wikipedia.org/wiki/Enchanter_(video_game)) | [Plundered Hearts](https://en.wikipedia.org/wiki/Plundered_Hearts) | [Wishbringer](https://en.wikipedia.org/wiki/Wishbringer) |
-| [_Hitchhiker's Guide To The Galaxy_](https://en.wikipedia.org/wiki/The_Hitchhiker%27s_Guide_to_the_Galaxy_(computer_game)) | [Seastalker](https://en.wikipedia.org/wiki/Seastalker) (limited support only)| [Witness](https://en.wikipedia.org/wiki/The_Witness_(1983_video_game)) |
-| [_Hollywood Hijinx_](https://en.wikipedia.org/wiki/Hollywood_Hijinx) | [Sorcerer](https://en.wikipedia.org/wiki/Sorcerer_(video_game)) | [Zork I](https://en.wikipedia.org/wiki/Zork_I) |
-| [_Infidel_](https://en.wikipedia.org/wiki/Infidel_(video_game)) | [Spellbreaker](https://en.wikipedia.org/wiki/Spellbreaker) | [Zork II](https://en.wikipedia.org/wiki/Zork_II) |
-| [_Leather Goddesses of Phobos_](https://en.wikipedia.org/wiki/Leather_Goddesses_of_Phobos) | [Starcross](https://en.wikipedia.org/wiki/Starcross_(video_game)) | [Zork III](https://en.wikipedia.org/wiki/Zork_III) |
+[_Ballyhoo_](https://en.wikipedia.org/wiki/Ballyhoo_(video_game)),
+[_Cutthroats_](https://en.wikipedia.org/wiki/Cutthroats_(video_game)),
+[_Deadline_](https://en.wikipedia.org/wiki/Deadline_(video_game)),
+[_Enchanter_](https://en.wikipedia.org/wiki/Enchanter_(video_game)),
+[_Hitchhiker's Guide To The Galaxy_](https://en.wikipedia.org/wiki/The_Hitchhiker%27s_Guide_to_the_Galaxy_(computer_game)),
+[_Hollywood Hijinx_](https://en.wikipedia.org/wiki/Hollywood_Hijinx),
+[_Infidel_](https://en.wikipedia.org/wiki/Infidel_(video_game)),
+[_Leather Goddesses of Phobos_](https://en.wikipedia.org/wiki/Leather_Goddesses_of_Phobos),
+
+[_Lurking Horror_](https://en.wikipedia.org/wiki/The_Lurking_Horror),
+[_Moonmist_](https://en.wikipedia.org/wiki/Moonmist),
+[_Planetfall_](https://en.wikipedia.org/wiki/Planetfall),
+[_Plundered Hearts_](https://en.wikipedia.org/wiki/Plundered_Hearts),
+[_Seastalker_](https://en.wikipedia.org/wiki/Seastalker) (limited support only),
+[_Sorcerer_](https://en.wikipedia.org/wiki/Sorcerer_(video_game)),
+[_Spellbreaker_](https://en.wikipedia.org/wiki/Spellbreaker),
+[_Starcross_](https://en.wikipedia.org/wiki/Starcross_(video_game)),
+
+[_Stationfall_](https://en.wikipedia.org/wiki/Stationfall),
+[_Suspect_](https://en.wikipedia.org/wiki/Suspect_(video_game)),
+[_Suspended_](https://en.wikipedia.org/wiki/Suspended_(video_game)),
+[_Wishbringer_](https://en.wikipedia.org/wiki/Wishbringer),
+[_Witness_](https://en.wikipedia.org/wiki/The_Witness_(1983_video_game)),
+[_Zork I_](https://en.wikipedia.org/wiki/Zork_I),
+[_Zork II_](https://en.wikipedia.org/wiki/Zork_II),
+[_Zork III_](https://en.wikipedia.org/wiki/Zork_III),
 
 Enjoy! &mdash; Lorenz
 
