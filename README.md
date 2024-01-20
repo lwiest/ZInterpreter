@@ -1,9 +1,9 @@
 # Z-Interpreter
 
-Z-Interpreter is an open-source program for playing [Infocom](https://en.wikipedia.org/wiki/Infocom) text adventures.
+_Z-Interpreter_ is an open-source program for playing [Infocom](https://en.wikipedia.org/wiki/Infocom) text adventures.
 It is written in Java.
 
-Z-Interpreter implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-machine), a virtual computer developed for playing text adventures. This Z-Interpreter implementation can play text adventures (compiled into "story files") for version 3 of the Z-machine. This applies to many of Infocom's classic text adventures, such as:
+_Z-Interpreter_ implements Infocom's [Z-machine](https://en.wikipedia.org/wiki/Z-machine), a virtual computer developed for playing text adventures. This Z-Interpreter implementation can play text adventures (compiled into "story files") for version 3 of the Z-machine. This applies to many of Infocom&rsquo;s classic text adventures, such as:
 
 [_Ballyhoo_](https://en.wikipedia.org/wiki/Ballyhoo_(video_game)),
 [_Cutthroats_](https://en.wikipedia.org/wiki/Cutthroats_(video_game)),
@@ -52,7 +52,7 @@ Enjoy! &mdash; Lorenz
    ``` 
    java -jar ZInterpreter.jar
    ```
-   This runs Z-Interpreter and lists command-line options:
+   This runs _Z-Interpreter_ and lists command-line options:
    ```
     ____      ___     _                        _           
    |_  / ___ |_ _|_ _| |_ ___ _ _ _ __ _ _ ___| |_ ___ _ _ 
@@ -70,7 +70,7 @@ Enjoy! &mdash; Lorenz
    ```
    java -jar ZInterpreter.jar ZORK1.DAT
    ```
-   Z-Interpreter answers with
+   _Z-Interpreter_ answers with
    ```
     ____      ___     _                        _           
    |_  / ___ |_ _|_ _| |_ ___ _ _ _ __ _ _ ___| |_ ___ _ _ 
@@ -93,8 +93,7 @@ Enjoy! &mdash; Lorenz
    ```
 
 ## Where Do I Get Infocom Story Files?
-You can find free story files of _Zork I_, _Zork II_, and _Zork III_ [here](http://www.infocom-if.org/downloads/downloads.html). The story files `ZORK1.DAT`, `ZORK2.DAT`, 
-and `ZORK3.DAT` are contained in the downloadable archives. Story files of other Infocom games are available elsewhere, but not in this GitHub repository. An Internet search may help.
+You can find free story files of _Zork I_, _Zork II_, and _Zork III_ [here](http://www.infocom-if.org/downloads/downloads.html). The story files `ZORK1.DAT`, `ZORK2.DAT`, and `ZORK3.DAT` are contained in the downloadable archives. Story files of other Infocom games are available elsewhere, but not in this GitHub repository. An Internet search may help.
 
 ## Can I Play _Adventure_ With This, Too?
 Yes. I created a [story file](adventure/Adventure.dat) for [_Adventure_](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) from a [version by Jesse McGrew et al.](https://www.ifarchive.org/if-archive/infocom/compilers/zilf/zilf-0.8.zip) plus a [map](adventure/Adventure.Map.pdf) and a [map without hints](adventure/Adventure.MapWithoutHints.pdf). They are all part of this GitHub repository.
@@ -105,10 +104,11 @@ Yes. I created a [story file](adventure/Adventure.dat) for [_Adventure_](https:/
 * You have installed Java SDK 8 or higher on your system.
 
 ### Instructions
-1. Download this project's ZIP file from GitHub and unzip it to a temporary folder.
-2. **To work with the Z-Interpreter source code in your Eclipse IDE**, import the `ZInterpreter` project to your Eclipse 
+1. Download this project&rsquo;s ZIP file from GitHub.
+2. Unzip it to a temporary folder.
+3. **To work with the _Z-Interpreter_ source code in your Eclipse IDE**, import the `ZInterpreter` project into your Eclipse 
 IDE from the temporary folder as an import source _General > Existing Projects into Workspace_.
-3. **To compile Z-Interpreter into a convenient JAR file** (Windows only), open a command prompt in the temporary folder 
+4. **To compile _Z-Interpreter_ into a convenient JAR file** (Windows only), open a command prompt in the temporary folder 
 and enter
    ```
    makejar
@@ -118,7 +118,7 @@ and enter
    (Note that the environment variable `JAVA_HOME` must point to the installation folder of your Java SDK.)
 
 ## Known Limitations
-Z-Interpreter implements a Z-machine of version 3 as described in [The Z-Machine Standards Document Version 1.0](https://www.ifarchive.org/if-archive/infocom/interpreters/specification/z-spec10-pdf.zip) with the following limitations:
+_Z-Interpreter_ implements a Z-machine of version 3 as described in [The Z-Machine Standards Document Version 1.0](https://www.ifarchive.org/if-archive/infocom/interpreters/specification/z-spec10-pdf.zip) with the following limitations:
 * No support of a status line (as this implementation uses a teletype output metaphor)
 * No support of sounds
 * No support of redirecting input and output
