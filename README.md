@@ -96,7 +96,7 @@ Enjoy! &mdash; Lorenz
 You can find free story files of _Zork I_, _Zork II_, and _Zork III_ [here](http://www.infocom-if.org/downloads/downloads.html). The story files `ZORK1.DAT`, `ZORK2.DAT`, and `ZORK3.DAT` are contained in the downloadable archives. Story files of other Infocom games are available elsewhere, but not in this GitHub repository. An Internet search may help.
 
 ## Can I Play _Adventure_ With This, Too?
-Yes. I created a [story file](adventure/Adventure.dat) for [_Adventure_](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) from a [version by Jesse McGrew et al.](https://www.ifarchive.org/if-archive/infocom/compilers/zilf/zilf-0.8.zip) plus a [map](adventure/Adventure.Map.pdf) and a [map without hints](adventure/Adventure.MapWithoutHints.pdf). They are all part of this GitHub repository.
+Yes. I created a [story file](adventure/Adventure.dat) for [_Adventure_](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) from a [version by Jesse McGrew et al.](https://www.ifarchive.org/if-archive/infocom/compilers/zilf/zilf-0.8.zip) plus a [map](adventure/Adventure.Map.pdf) and a [map without hints](adventure/Adventure.MapWithoutHints.pdf). They are part of this GitHub repository.
 
 ## Build Instructions
 
@@ -106,8 +106,8 @@ Yes. I created a [story file](adventure/Adventure.dat) for [_Adventure_](https:/
 ### Instructions
 1. Download this project&rsquo;s ZIP file from GitHub.
 2. Unzip it to a temporary folder.
-3. **To work with the _Z-Interpreter_ source code in your Eclipse IDE**, import the `ZInterpreter` project into your Eclipse 
-IDE from the temporary folder as an import source _General > Existing Projects into Workspace_.
+3. **To work with the _Z-Interpreter_ source code in your Eclipse IDE**, import the `ZInterpreter` project from the temporary folder into your Eclipse 
+IDE as an import source _General > Existing Projects into Workspace_.
 4. **To compile _Z-Interpreter_ into a convenient JAR file** (Windows only), open a command prompt in the temporary folder 
 and enter
    ```
