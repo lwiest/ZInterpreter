@@ -128,7 +128,7 @@ public class ZInterpreter {
 			}
 
 			public void push(int value) {
-				if (this.topIndex >= STACK_SIZE) {
+				if (this.topIndex >= STACK_SIZE - 1) {
 					halt("push() - Stack overflow");
 				}
 				this.topIndex++;
