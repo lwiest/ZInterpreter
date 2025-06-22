@@ -111,7 +111,7 @@ public class ZInterpreter {
 			//  ---------------------------
 			//    -1
 
-			private final static int STACK_SIZE = 1024;
+			private static final int STACK_SIZE = 1024;
 
 			private int[] stack;
 			private int topIndex;
@@ -176,14 +176,14 @@ public class ZInterpreter {
 
 		////////////////////////////////////////////////////////////////////////////
 
-		private final static String EOL = "\n"; // platform-independent EOL
+		private static final String EOL = "\n"; // platform-independent EOL
 
-		private final static int OPERAND_LARGE = 0b00;
-		private final static int OPERAND_SMALL = 0b01;
-		private final static int OPERAND_VARIABLE = 0b10;
-		private final static int OPERAND_OMITTED = 0b11;
+		private static final int OPERAND_LARGE = 0b00;
+		private static final int OPERAND_SMALL = 0b01;
+		private static final int OPERAND_VARIABLE = 0b10;
+		private static final int OPERAND_OMITTED = 0b11;
 
-		private final static int WORD_SIZE = 2;
+		private static final int WORD_SIZE = 2;
 
 		private byte[] story;
 		private Header header;
@@ -542,7 +542,7 @@ public class ZInterpreter {
 
 		// decoding/encoding strings
 
-		private final static String ALPHABET = "" //
+		private static final String ALPHABET = "" //
 				+ "abcdefghijklmnopqrstuvwxyz" //
 				+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"//
 				+ "*" + EOL + "0123456789.,!?_#'\"/\\-:()";
