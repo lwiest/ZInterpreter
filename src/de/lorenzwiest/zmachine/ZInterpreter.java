@@ -223,22 +223,22 @@ public class ZInterpreter {
 
 		// utilities
 
-		public boolean isBitSet(int value, int bitPos) {
+		public static boolean isBitSet(int value, int bitPos) {
 			return (value & (1 << bitPos)) != 0;
 		}
 
-		public boolean isBitClear(int value, int bitPos) {
+		public static boolean isBitClear(int value, int bitPos) {
 			return isBitSet(value, bitPos) == false;
 		}
 
-		public int toInt32(int value) {
+		public static int toInt32(int value) {
 			if (isBitSet(value, 15)) {
 				value |= 0xFFFF0000;
 			}
 			return value;
 		}
 
-		public int toUint16(int value) {
+		public static int toUint16(int value) {
 			return value & 0xFFFF;
 		}
 
@@ -592,7 +592,7 @@ public class ZInterpreter {
 			return result.toString();
 		}
 
-		private byte[] encodeZString(String text) {
+		private static byte[] encodeZString(String text) {
 			List<Integer> zchars = new ArrayList<Integer>();
 
 			text = text.toLowerCase(); // duplicate toLowerCase(), just to make sure
@@ -743,11 +743,11 @@ public class ZInterpreter {
 
 		//
 
-		public int getUnpackedAddress(int packedAddr) {
+		public static int getUnpackedAddress(int packedAddr) {
 			return packedAddr * 2;
 		}
 
-		private void halt(String errorMessage) {
+		private static void halt(String errorMessage) {
 			throw new RuntimeException("Z-Machine halted: " + errorMessage);
 		}
 	}
@@ -770,7 +770,7 @@ public class ZInterpreter {
 	}
 
 	private void restoreScore() {
-		this.oldScore = this.zm.toInt32(this.zm.getVariableValue(17));
+		this.oldScore = ZMachine.toInt32(this.zm.getVariableValue(17));
 	}
 
 	private void checkForScoreUpdate() {
@@ -778,8 +778,8 @@ public class ZInterpreter {
 			return;
 		}
 
-		if (this.zm.isBitClear(this.zm.header.flags1, 1)) {
-			int newScore = this.zm.toInt32(this.zm.getVariableValue(17));
+		if (ZMachine.isBitClear(this.zm.header.flags1, 1)) {
+			int newScore = ZMachine.toInt32(this.zm.getVariableValue(17));
 			int scoreDelta = newScore - this.oldScore;
 			this.oldScore = newScore;
 
@@ -1049,7 +1049,7 @@ public class ZInterpreter {
 		restoreScore();
 	}
 
-	private boolean isHexNumber(String str) {
+	private static boolean isHexNumber(String str) {
 		try {
 			Integer.parseInt(str, 16);
 		} catch (NumberFormatException e) {
@@ -1138,15 +1138,15 @@ public class ZInterpreter {
 
 	private void Z_inc(int arg) {
 		int value = this.zm.getVariableValue(arg);
-		int valueInt32 = this.zm.toInt32(value);
-		int result = this.zm.toUint16(valueInt32 + 1);
+		int valueInt32 = ZMachine.toInt32(value);
+		int result = ZMachine.toUint16(valueInt32 + 1);
 		this.zm.setVariableValue(arg, result);
 	}
 
 	private void Z_dec(int arg) {
 		int value = this.zm.getVariableValue(arg);
-		int valueInt32 = this.zm.toInt32(value);
-		int result = this.zm.toUint16(valueInt32 - 1);
+		int valueInt32 = ZMachine.toInt32(value);
+		int result = ZMachine.toUint16(valueInt32 - 1);
 		this.zm.setVariableValue(arg, result);
 	}
 
@@ -1200,12 +1200,12 @@ public class ZInterpreter {
 	}
 
 	private void Z_jump(int arg) {
-		int offset = this.zm.toInt32(arg);
+		int offset = ZMachine.toInt32(arg);
 		this.zm.pc = (this.zm.pc + offset) - 2;
 	}
 
 	private void Z_print_paddr(int arg) {
-		int addr = this.zm.getUnpackedAddress(arg);
+		int addr = ZMachine.getUnpackedAddress(arg);
 		if (this.zm.isHighMemory(addr)) {
 			String str = this.zm.decodeZString(addr);
 			print(str);
@@ -1220,7 +1220,7 @@ public class ZInterpreter {
 	}
 
 	private void Z_not(int arg) { // STORE OP
-		int value = this.zm.toUint16(arg);
+		int value = ZMachine.toUint16(arg);
 		int result = value ^ 0xFFFF;
 		this.zm.consumeAndStore(result);
 	}
@@ -1240,15 +1240,15 @@ public class ZInterpreter {
 	}
 
 	private void Z_jl(int args[]) { // BRANCH OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
 		boolean isBranch = value1 < value2;
 		this.zm.consumeAndBranch(isBranch);
 	}
 
 	private void Z_jg(int args[]) { // BRANCH OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
 		boolean isBranch = value1 > value2;
 		this.zm.consumeAndBranch(isBranch);
 	}
@@ -1258,8 +1258,8 @@ public class ZInterpreter {
 		int value = args[1];
 
 		Z_dec(varNumber);
-		int value1 = this.zm.toInt32(this.zm.getVariableValue(varNumber));
-		int value2 = this.zm.toInt32(value);
+		int value1 = ZMachine.toInt32(this.zm.getVariableValue(varNumber));
+		int value2 = ZMachine.toInt32(value);
 		boolean isBranch = value1 < value2;
 		this.zm.consumeAndBranch(isBranch);
 	}
@@ -1269,8 +1269,8 @@ public class ZInterpreter {
 		int value = args[1];
 
 		Z_inc(varNumber);
-		int value1 = this.zm.toInt32(this.zm.getVariableValue(varNumber));
-		int value2 = this.zm.toInt32(value);
+		int value1 = ZMachine.toInt32(this.zm.getVariableValue(varNumber));
+		int value2 = ZMachine.toInt32(value);
 		boolean isBranch = value1 > value2;
 		this.zm.consumeAndBranch(isBranch);
 	}
@@ -1285,22 +1285,22 @@ public class ZInterpreter {
 	}
 
 	private void Z_test(int args[]) { // BRANCH OP
-		int bitmap = this.zm.toUint16(args[0]); // is conversion necessary?
-		int flags = this.zm.toUint16(args[1]);
+		int bitmap = ZMachine.toUint16(args[0]); // is conversion necessary?
+		int flags = ZMachine.toUint16(args[1]);
 		boolean isBranch = (bitmap & flags) == flags;
 		this.zm.consumeAndBranch(isBranch);
 	}
 
 	private void Z_or(int args[]) { // STORE OP
-		int value1 = this.zm.toUint16(args[0]);
-		int value2 = this.zm.toUint16(args[1]);
+		int value1 = ZMachine.toUint16(args[0]);
+		int value2 = ZMachine.toUint16(args[1]);
 		int result = value1 | value2;
 		this.zm.consumeAndStore(result);
 	}
 
 	private void Z_and(int args[]) { // STORE OP
-		int value1 = this.zm.toUint16(args[0]);
-		int value2 = this.zm.toUint16(args[1]);
+		int value1 = ZMachine.toUint16(args[0]);
+		int value2 = ZMachine.toUint16(args[1]);
 		int result = value1 & value2;
 		this.zm.consumeAndStore(result);
 	}
@@ -1450,45 +1450,45 @@ public class ZInterpreter {
 	}
 
 	private void Z_add(int args[]) { // STORE OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
-		int result = this.zm.toUint16(value1 + value2);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
+		int result = ZMachine.toUint16(value1 + value2);
 		this.zm.consumeAndStore(result);
 	}
 
 	private void Z_sub(int args[]) { // STORE OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
-		int result = this.zm.toUint16(value1 - value2);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
+		int result = ZMachine.toUint16(value1 - value2);
 		this.zm.consumeAndStore(result);
 	}
 
 	private void Z_mul(int args[]) { // STORE OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
-		int result = this.zm.toUint16(value1 * value2);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
+		int result = ZMachine.toUint16(value1 * value2);
 		this.zm.consumeAndStore(result);
 	}
 
 	private void Z_div(int args[]) { // STORE OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
 		if (value2 == 0) {
 			halt("Z_div() - Divison by zero");
 		}
 
-		int result = this.zm.toUint16(value1 / value2);
+		int result = ZMachine.toUint16(value1 / value2);
 		this.zm.consumeAndStore(result);
 	}
 
 	private void Z_mod(int args[]) {// STORE OP
-		int value1 = this.zm.toInt32(args[0]);
-		int value2 = this.zm.toInt32(args[1]);
+		int value1 = ZMachine.toInt32(args[0]);
+		int value2 = ZMachine.toInt32(args[1]);
 		if (value2 == 0) {
 			halt("Z_mod() - Modulo division by zero");
 		}
 
-		int result = this.zm.toUint16(value1 % value2);
+		int result = ZMachine.toUint16(value1 % value2);
 		this.zm.consumeAndStore(result);
 	}
 
@@ -1663,12 +1663,12 @@ public class ZInterpreter {
 	}
 
 	private void Z_print_num(int args[]) {
-		int value = this.zm.toInt32(args[0]);
+		int value = ZMachine.toInt32(args[0]);
 		print(String.format("%d", value));
 	}
 
 	private void Z_random(int args[]) { // STORE OP
-		int arg = this.zm.toInt32(args[0]);
+		int arg = ZMachine.toInt32(args[0]);
 		int value = this.zm.random(arg);
 		this.zm.consumeAndStore(value);
 	}
@@ -1961,7 +1961,7 @@ public class ZInterpreter {
 		int opTypes = this.zm.consumeByte();
 
 		int[] args = this.zm.consumeOperands(opTypes);
-		boolean is2OP = this.zm.isBitClear(opCode, 5);
+		boolean is2OP = ZMachine.isBitClear(opCode, 5);
 		if (is2OP) {
 			call2Op(opCodeNr, args);
 		} else {
@@ -1972,8 +1972,8 @@ public class ZInterpreter {
 	private void interpretLongForm() {
 		int opCode = this.zm.consumeByte();
 
-		int opType1 = this.zm.isBitClear(opCode, 6) ? ZMachine.OPERAND_SMALL : ZMachine.OPERAND_VARIABLE;
-		int opType2 = this.zm.isBitClear(opCode, 5) ? ZMachine.OPERAND_SMALL : ZMachine.OPERAND_VARIABLE;
+		int opType1 = ZMachine.isBitClear(opCode, 6) ? ZMachine.OPERAND_SMALL : ZMachine.OPERAND_VARIABLE;
+		int opType2 = ZMachine.isBitClear(opCode, 5) ? ZMachine.OPERAND_SMALL : ZMachine.OPERAND_VARIABLE;
 		int opCodeNr = opCode & 0b1_1111;
 
 		int opValue1 = this.zm.consumeOperand(opType1);
@@ -2010,7 +2010,7 @@ public class ZInterpreter {
 		}
 	}
 
-	private void halt(String errorMessage) {
+	private static void halt(String errorMessage) {
 		throw new RuntimeException("Z-Interpreter halted: " + errorMessage);
 	}
 
