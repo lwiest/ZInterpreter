@@ -695,27 +695,27 @@ public class ZInterpreter {
 			PREDICTABLE
 		}
 
-		private RandomNumberGeneratorState rngState = RandomNumberGeneratorState.RANDOM;
-		private int rngSeed;
-		private int rngCounter;
+		private RandomNumberGeneratorState rndGenState = RandomNumberGeneratorState.RANDOM;
+		private int rndGenSeed;
+		private int rndGenCounter;
 
 		public int random(int value) {
 			int result = -1;
 
 			if (value == 0) {
-				this.rngState = RandomNumberGeneratorState.RANDOM;
+				this.rndGenState = RandomNumberGeneratorState.RANDOM;
 				return 0; // unsure, if this is correct
 			} else if (value < 0) {
-				this.rngState = RandomNumberGeneratorState.PREDICTABLE;
-				this.rngSeed = -value;
-				this.rngCounter = -1;
+				this.rndGenState = RandomNumberGeneratorState.PREDICTABLE;
+				this.rndGenSeed = -value;
+				this.rndGenCounter = -1;
 			}
 
-			if (this.rngState == RandomNumberGeneratorState.RANDOM) {
+			if (this.rndGenState == RandomNumberGeneratorState.RANDOM) {
 				result = (int) (Math.random() * value) + 1;
 			} else {
-				this.rngCounter++;
-				result = (this.rngCounter % this.rngSeed) + 1;
+				this.rndGenCounter++;
+				result = (this.rndGenCounter % this.rndGenSeed) + 1;
 			}
 
 			return result;
