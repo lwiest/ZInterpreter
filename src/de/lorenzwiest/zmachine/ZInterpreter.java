@@ -161,14 +161,14 @@ public class ZInterpreter {
 
 			public int peek(int index) {
 				if ((index < 0) || (index > this.topIndex)) {
-					halt(String.format("peek() - Index %d out of bounds [%d..%d]", index, 0, this.topIndex));
+					halt(String.format("peek() - Index %d is out of bounds [%d..%d]", index, 0, this.topIndex));
 				}
 				return this.stack[index];
 			}
 
 			public void poke(int index, int value) {
 				if ((index < 0) || (index > this.topIndex)) {
-					halt(String.format("poke() - Index %d out of bounds [%d..%d]", index, 0, this.topIndex));
+					halt(String.format("poke() - Index %d is out of bounds [%d..%d]", index, 0, this.topIndex));
 				}
 				this.stack[index] = value;
 			}
@@ -349,7 +349,7 @@ public class ZInterpreter {
 			} else if ((varNumber >= 16) && (varNumber <= 255)) {
 				value = getGlobalVariableValue(varNumber);
 			} else {
-				halt(String.format("getVariableValue() - Variable number %d out of bounds [%d..%d]", varNumber, 1, 255));
+				halt(String.format("getVariableValue() - Variable number %d is out of bounds [%d..%d]", varNumber, 1, 255));
 			}
 			return value;
 		}
@@ -357,7 +357,7 @@ public class ZInterpreter {
 		private int getLocalVariableIndex(int localVarNumber /* 1..15 */) {
 			int numLocalVars = this.stack.peek(this.stack.stackFrameIndex + 1);
 			if ((localVarNumber < 1) || (localVarNumber > numLocalVars)) {
-				halt(String.format("getLocalVariableAddress() - Local variable number %d out of bounds [%d..%d]", localVarNumber, 1, numLocalVars));
+				halt(String.format("getLocalVariableAddress() - Local variable number %d is out of bounds [%d..%d]", localVarNumber, 1, numLocalVars));
 			}
 			int localIndex = this.stack.stackFrameIndex + 1 + localVarNumber;
 			return localIndex;
@@ -365,7 +365,7 @@ public class ZInterpreter {
 
 		private int getGlobalVariableAddress(int globalVarNumber /* 16..255 */) {
 			if ((globalVarNumber < 16) || (globalVarNumber > 255)) {
-				halt(String.format("getGlobalVariableAddress() - Global variable number %d out of bounds [%d..%d]", globalVarNumber, 16, 255));
+				halt(String.format("getGlobalVariableAddress() - Global variable number %d is out of bounds [%d..%d]", globalVarNumber, 16, 255));
 			}
 			int globalAddr = this.header.globalVariablesTableAddr + ((globalVarNumber - 16) * WORD_SIZE);
 			return globalAddr;
@@ -391,7 +391,7 @@ public class ZInterpreter {
 			} else if ((varNumber >= 16) && (varNumber <= 255)) {
 				setGlobalVariableValue(varNumber, value);
 			} else {
-				halt(String.format("setVariableValue() - Variable number %d out of bounds [%d..%d]", varNumber, 1, 255));
+				halt(String.format("setVariableValue() - Variable number %d is out of bounds [%d..%d]", varNumber, 1, 255));
 			}
 		}
 
@@ -412,12 +412,12 @@ public class ZInterpreter {
 
 			int routineAddr = getUnpackedAddress(args[0]);
 			if (routineAddr >= this.header.lengthOfFile) {
-				halt(String.format("zmcall() - Called routine at 0x%x outside of story file", routineAddr));
+				halt(String.format("zmcall() - Called routine at 0x%x is outside of story file", routineAddr));
 			}
 
 			int numLocals = getByte(routineAddr);
 			if (numLocals > 15) {
-				halt(String.format("zmcall() - Called routine at 0x%x not a routine", routineAddr));
+				halt(String.format("zmcall() - Called routine at 0x%x is not a routine", routineAddr));
 			}
 
 			if (routineAddr == 0) {
@@ -484,7 +484,7 @@ public class ZInterpreter {
 
 		public int getObjectAddress(int objNumber) {
 			if ((objNumber < 1) || (objNumber > 255)) {
-				halt(String.format("getObjectAddress() - Object number %d out of bounds [%d..%d]", objNumber, 1, 255));
+				halt(String.format("getObjectAddress() - Object number %d is out of bounds [%d..%d]", objNumber, 1, 255));
 			}
 
 			int objAddr = this.header.objectTableAddr + (NUM_PROPERTIES * WORD_SIZE) + ((objNumber - 1) * OBJECT_ELEMENT_SIZE);
@@ -682,7 +682,7 @@ public class ZInterpreter {
 
 		private int getAbbreviationAddress(int abbrIndex) {
 			if ((abbrIndex < 0) || (abbrIndex > 95)) {
-				halt(String.format("getAbbreviationAddress() - Index %d out of bounds [%d..%d]", abbrIndex, 0, 95));
+				halt(String.format("getAbbreviationAddress() - Index %d is out of bounds [%d..%d]", abbrIndex, 0, 95));
 			}
 			int abbrAddr = this.header.abbreviationTableAddr + (abbrIndex * WORD_SIZE);
 			return getUnpackedAddress(getWord(abbrAddr));
@@ -1155,7 +1155,7 @@ public class ZInterpreter {
 			String str = this.zm.decodeZString(arg);
 			print(str);
 		} else {
-			halt(String.format("Z_print_addr() - Address 0x%x not in dynamic or static memory", arg));
+			halt(String.format("Z_print_addr() - Address 0x%x is not in dynamic or static memory", arg));
 		}
 	}
 
@@ -1210,7 +1210,7 @@ public class ZInterpreter {
 			String str = this.zm.decodeZString(addr);
 			print(str);
 		} else {
-			halt(String.format("Z_print_paddr() - Address 0x%x not in high memory", arg));
+			halt(String.format("Z_print_paddr() - Address 0x%x is not in high memory", arg));
 		}
 	}
 
@@ -1309,7 +1309,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int bitNumber = args[1];
 		if ((bitNumber < 0) || (bitNumber > 31)) {
-			halt(String.format("Z_test_attr() - Bit number %d out of bounds [%d..%d]", bitNumber, 0, 31));
+			halt(String.format("Z_test_attr() - Bit number %d is out of bounds [%d..%d]", bitNumber, 0, 31));
 		}
 
 		int objAddr = this.zm.getObjectAddress(objNumber);
@@ -1325,7 +1325,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int bitNumber = args[1];
 		if ((bitNumber < 0) || (bitNumber > 31)) {
-			halt(String.format("Z_set_attr() - Bit number %d out of bounds [%d..%d]", bitNumber, 0, 31));
+			halt(String.format("Z_set_attr() - Bit number %d is out of bounds [%d..%d]", bitNumber, 0, 31));
 		}
 
 		int objAddr = this.zm.getObjectAddress(objNumber);
@@ -1340,7 +1340,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int bitNumber = args[1];
 		if ((bitNumber < 0) || (bitNumber > 31)) {
-			halt(String.format("Z_set_attr() - Bit number %d out of bounds [%d..%d]", bitNumber, 0, 31));
+			halt(String.format("Z_set_attr() - Bit number %d is out of bounds [%d..%d]", bitNumber, 0, 31));
 		}
 
 		int objAddr = this.zm.getObjectAddress(objNumber);
@@ -1361,7 +1361,7 @@ public class ZInterpreter {
 		int objNumber = args[0];
 		int destObjNumber = args[1];
 		if (objNumber == destObjNumber) {
-			halt(String.format("Z_insert_obj() - Insert object number %d to itself", objNumber));
+			halt(String.format("Z_insert_obj() - Insert object number %d into itself", objNumber));
 		}
 
 		if (destObjNumber == this.zm.getParentNumber(objNumber)) {
@@ -1381,7 +1381,7 @@ public class ZInterpreter {
 			int result = this.zm.getWord(addr);
 			this.zm.consumeAndStore(result);
 		} else {
-			halt(String.format("Z_loadw() - Address 0x%x not in dynamic or static memory", addr));
+			halt(String.format("Z_loadw() - Address 0x%x is not in dynamic or static memory", addr));
 		}
 	}
 
@@ -1391,7 +1391,7 @@ public class ZInterpreter {
 			int result = this.zm.getByte(addr);
 			this.zm.consumeAndStore(result);
 		} else {
-			halt(String.format("Z_loadb() - Address 0x%x not in dynamic or static memory", addr));
+			halt(String.format("Z_loadb() - Address 0x%x is not in dynamic or static memory", addr));
 		}
 	}
 
@@ -1409,7 +1409,7 @@ public class ZInterpreter {
 			} else if (propLen == 2) {
 				propValue = this.zm.getWord(propAddr + 1);
 			} else {
-				halt(String.format("Z_get_prop() - Property length %d of property %d of object %d out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
+				halt(String.format("Z_get_prop() - Property length %d of property %d of object %d is out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
 			}
 		} else {
 			int defaultValueAddr = this.zm.header.objectTableAddr + ((propNumber - 1) * ZMachine.WORD_SIZE);
@@ -1433,7 +1433,7 @@ public class ZInterpreter {
 
 		int propAddr = getPropAddress(objNumber, propNumber, /* isAcceptPropNumberZero */ true);
 		if (propAddr == 0) {
-			halt(String.format("Z_get_next_prop() - Next property of property number %d of object %d not found", propNumber, objNumber));
+			halt(String.format("Z_get_next_prop() - Next property of property number %d of object %d was not found", propNumber, objNumber));
 		}
 
 		int propValue = -1;
@@ -1506,7 +1506,7 @@ public class ZInterpreter {
 		if (this.zm.isDynamicMemory(addr)) {
 			this.zm.setWord(addr, value);
 		} else {
-			halt(String.format("Z_storew() - Address 0x%x not in dynamic memory", addr));
+			halt(String.format("Z_storew() - Address 0x%x is not in dynamic memory", addr));
 		}
 	}
 
@@ -1517,7 +1517,7 @@ public class ZInterpreter {
 		if (this.zm.isDynamicMemory(addr)) {
 			this.zm.setByte(addr, value);
 		} else {
-			halt(String.format("Z_storeb() - Address 0x%x not in dynamic memory", addr));
+			halt(String.format("Z_storeb() - Address 0x%x is not in dynamic memory", addr));
 		}
 	}
 
@@ -1526,7 +1526,7 @@ public class ZInterpreter {
 
 		int minAcceptedPropNumber = isAcceptPropNumberZero ? 0 : 1;
 		if ((propNumber < minAcceptedPropNumber) || (propNumber > 255)) {
-			halt(String.format("getPropAddress() - Property number %d of object %d out of bounds [%d..%d]", propNumber, objNumber, minAcceptedPropNumber, 31));
+			halt(String.format("getPropAddress() - Property number %d of object %d is out of bounds [%d..%d]", propNumber, objNumber, minAcceptedPropNumber, 31));
 		}
 
 		int propAddr = this.zm.getWord(objAddr + 7);
@@ -1567,10 +1567,10 @@ public class ZInterpreter {
 			} else if (propLen == 2) {
 				this.zm.setWord(propAddr + 1, value);
 			} else {
-				halt(String.format("Z_put_prop() - Property length %d of property %d of object %d out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
+				halt(String.format("Z_put_prop() - Property length %d of property %d of object %d is out of bounds [%d..%d]", propLen, propNumber, objNumber, 1, 2));
 			}
 		} else {
-			halt(String.format("Z_put_prop() - Property number %d of object %d not found", propNumber, objNumber));
+			halt(String.format("Z_put_prop() - Property number %d of object %d was not found", propNumber, objNumber));
 		}
 	}
 
@@ -1579,7 +1579,7 @@ public class ZInterpreter {
 		int parseAddr = args[1];
 
 		if (this.zm.getByte(textAddr) < 3) {
-			halt("Z_sread() - Text buffer less than 3 bytes long");
+			halt("Z_sread() - Text buffer is less than 3 bytes long");
 		}
 
 		// TODO: Show status line
@@ -1596,7 +1596,7 @@ public class ZInterpreter {
 
 		int maxWordsToParse = this.zm.getByte(parseAddr);
 		if (maxWordsToParse < 1) {
-			halt("Z_sread() - Parse buffer less than 1 word long");
+			halt("Z_sread() - Parse buffer is less than 1 word long");
 		}
 
 		String wordSeparators = this.zm.getWordSeparators();
