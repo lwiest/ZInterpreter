@@ -664,10 +664,10 @@ public class ZInterpreter {
 			return 0;
 		}
 
-		private String WORD_SEPARATORS = null;
+		private String wordSeparators = null;
 
 		public String getWordSeparators() {
-			if (this.WORD_SEPARATORS == null) {
+			if (this.wordSeparators == null) {
 				int dictionaryAddr = this.header.dictionaryAddr;
 				int numSeparators = getByte(dictionaryAddr);
 
@@ -675,9 +675,9 @@ public class ZInterpreter {
 				for (int i = 0; i < numSeparators; i++) {
 					buffer.append((char) getByte(dictionaryAddr + 1 + i));
 				}
-				this.WORD_SEPARATORS = buffer.toString();
+				this.wordSeparators = buffer.toString();
 			}
-			return this.WORD_SEPARATORS;
+			return this.wordSeparators;
 		}
 
 		private int getAbbreviationAddress(int abbrIndex) {
