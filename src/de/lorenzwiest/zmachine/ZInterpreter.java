@@ -543,9 +543,9 @@ public class ZInterpreter {
 		// decoding/encoding strings
 
 		private static final String ALPHABET = "" //
-				+ "abcdefghijklmnopqrstuvwxyz" //
-				+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"//
-				+ "*" + EOL + "0123456789.,!?_#'\"/\\-:()";
+				+ "abcdefghijklmnopqrstuvwxyz"              // Alphabet 0
+				+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"              // Alphabet 1
+				+ "*" + EOL + "0123456789.,!?_#'\"/\\-:()"; // Alphabet 2
 
 		public String decodeZString(int index) {
 			List<Integer> zchars = new ArrayList<Integer>();
@@ -560,7 +560,11 @@ public class ZInterpreter {
 				index += 2;
 			} while (isDone == false);
 
-			int currAlphabet = 0;
+			int CURR_ALPHABET_0 = 0;
+			int CURR_ALPHABET_1 = 1;
+			int CURR_ALPHABET_2 = 2;
+			
+			int currAlphabet = CURR_ALPHABET_0;
 			StringBuffer result = new StringBuffer();
 			for (int i = 0; i < zchars.size(); i++) {
 				int zchar = zchars.get(i);
@@ -573,12 +577,12 @@ public class ZInterpreter {
 					int strAddr = getAbbreviationAddress(abbrIndex);
 					result.append(decodeZString(strAddr));
 				} else if (zchar == 4) {
-					currAlphabet = 1;
+					currAlphabet = CURR_ALPHABET_1;
 					continue;
 				} else if (zchar == 5) {
-					currAlphabet = 2;
+					currAlphabet = CURR_ALPHABET_2;
 					continue;
-				} else if ((zchar == 6) && (currAlphabet == 2)) {
+				} else if ((zchar == 6) && (currAlphabet == CURR_ALPHABET_2)) {
 					int zchar2 = zchars.get(i + 1);
 					int zchar3 = zchars.get(i + 2);
 					i += 2;
@@ -586,7 +590,7 @@ public class ZInterpreter {
 				} else {
 					result.append(ALPHABET.charAt(((currAlphabet * 26) + zchar) - 6));
 				}
-				currAlphabet = 0;
+				currAlphabet = CURR_ALPHABET_0;
 			}
 
 			return result.toString();
@@ -910,7 +914,7 @@ public class ZInterpreter {
 	}
 
 	private String createSaveContent() {
-		final int NUM_BYTES_IN_ROW = 40;
+		final int BYTES_PER_ROW = 40;
 
 		StringBuffer result = new StringBuffer();
 
@@ -923,7 +927,7 @@ public class ZInterpreter {
 		result.append("stack" + CR);
 		result.append(String.format("%04x", this.zm.stack.topIndex + 1) + CR);
 		for (int i = 0; i < (this.zm.stack.topIndex + 1); i++) {
-			if ((i > 0) && ((i % NUM_BYTES_IN_ROW) == 0)) {
+			if ((i > 0) && ((i % BYTES_PER_ROW) == 0)) {
 				result.append(CR);
 			}
 			result.append(String.format("%04x ", this.zm.stack.peek(i) & 0xFFFF));
@@ -939,7 +943,7 @@ public class ZInterpreter {
 		result.append("dynamicmemory" + CR);
 		result.append(String.format("%04x", this.zm.header.baseStaticMemoryAddr) + CR);
 		for (int i = 0; i < this.zm.header.baseStaticMemoryAddr; i++) {
-			if ((i > 0) && ((i % NUM_BYTES_IN_ROW) == 0)) {
+			if ((i > 0) && ((i % BYTES_PER_ROW) == 0)) {
 				result.append(CR);
 			}
 			result.append(String.format("%02x ", this.zm.getByte(i)));
